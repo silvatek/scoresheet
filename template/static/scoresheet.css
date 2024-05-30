@@ -1,5 +1,5 @@
 body {
-	font-family: 'Roboto', sans-serif;
+	font-family: Arial, sans-serif;
 	font-display: fallback;
 	/* background: url('/static/cloud_bg.svg'); 
 	background-size: cover;
@@ -8,10 +8,24 @@ body {
 	line-height: 1.6;
  }
 
+ .headingblock {
+	display: inline-block;
+	/* align-items: flex-start;
+	justify-content: space-between; */
+ }
+
 h1 {
 	font-size: 24px;
 	font-weight: bold;
 	margin-bottom: 0px;
+}
+
+.h1image {
+	padding-top: 32px;
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+	height: 24px;
+	margin-right: 12px;
 }
 
 h2 {
