@@ -427,7 +427,7 @@ func qrCodeGenerator(w http.ResponseWriter, r *http.Request) {
 
 	tempFileName := os.Getenv("TMPDIR") + "/" + gameId + ".png"
 
-	qrcode.WriteFile(gameUrl, qrcode.High, 256, tempFileName)
+	qrcode.WriteFile(gameUrl, qrcode.High, 320, tempFileName)
 	defer os.Remove(tempFileName)
 
 	content, _ := os.ReadFile(tempFileName)
