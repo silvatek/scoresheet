@@ -35,6 +35,19 @@
 			<div class="formlabel">&nbsp;</div>
 			<input type="submit" value="View game">
 		</form>
+
+
+		{{if gt (len .History) 0}}
+		<h3>Recent games</h3>
+		<div>You have recently accessed the following games on this device:-</div>
+		<ul>
+			{{range $game := .History}} 
+				<li>
+					<a href="/game/{{$game}}">{{$game}}</a>
+				</li>
+			{{end}}
+		</ul>
+		{{end}}
 	</div>
 </body>
 </html>

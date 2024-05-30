@@ -23,6 +23,7 @@ type pageData struct {
 	GameID  string
 	GameURL string
 	Encoded string
+	History []string
 }
 
 func addHandlers() {
@@ -54,6 +55,7 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 	data := pageData{
 		Message: "Ice Hockey Scoresheet",
+		History: gameHistory(r),
 	}
 
 	showTemplatePage("index", data, w)
@@ -162,12 +164,7 @@ func gamePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func setGameHistoryCookie(gameId string, w http.ResponseWriter, r *http.Request) {
-	var gameList string
-	current, err := r.Cookie("gameHistory")
-	if err != http.ErrNoCookie {
-		gameList = current.Value
-		logs.debug1(context.Background(), "Loaded game history: %s", gameList)
-	}
+	gameList := getExistingGameList(r)
 
 	gameList = gameId + " " + strings.Trim(strings.ReplaceAll(gameList, gameId, " "), " ")
 	logs.debug1(context.Background(), "New game history: %s", gameList)
@@ -181,6 +178,25 @@ func setGameHistoryCookie(gameId string, w http.ResponseWriter, r *http.Request)
 	}
 
 	http.SetCookie(w, &cookie)
+}
+
+func getExistingGameList(r *http.Request) string {
+	var gameList string
+	current, err := r.Cookie("gameHistory")
+	if err != http.ErrNoCookie {
+		gameList = current.Value
+		logs.debug1(context.Background(), "Loaded game history: %s", gameList)
+	}
+	return strings.Trim(gameList, " ")
+}
+
+func gameHistory(r *http.Request) []string {
+	cookieValue := getExistingGameList(r)
+	var games []string
+	if cookieValue != "" {
+		games = strings.Split(cookieValue, " ")
+	}
+	return games
 }
 
 func showErrorPage(error string, w http.ResponseWriter) {
