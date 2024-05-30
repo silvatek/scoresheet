@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"html"
 
 	"os"
 
@@ -10,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+
+	"github.com/skip2/go-qrcode"
 )
 
 type pageData struct {
@@ -17,6 +20,9 @@ type pageData struct {
 	Error   string
 	Game    Game
 	Summary GameSummary
+	GameID  string
+	GameURL string
+	Encoded string
 }
 
 func addHandlers() {
@@ -31,6 +37,8 @@ func addHandlers() {
 	http.HandleFunc("/deleteGameEvent", deleteEventPost)
 	http.HandleFunc("/lockGame", lockGame)
 	http.HandleFunc("/unlockGame", unlockGame)
+	http.HandleFunc("/sharegame", shareGame)
+	http.HandleFunc("/qrcode", qrCodeGenerator)
 
 	addStaticAssetHandler()
 }
@@ -385,5 +393,41 @@ func unlockGame(w http.ResponseWriter, r *http.Request) {
 
 func gameIdParameter(r *http.Request) string {
 	params := strings.Split(r.RequestURI, "?")[1]
-	return strings.TrimPrefix(params, "game=")
+	return strings.ToUpper(strings.TrimPrefix(params, "game="))
+}
+
+func gameUrl(gameId string, r *http.Request) string {
+	proto := strings.ToLower(strings.Split(r.Proto, "/")[0])
+	return proto + "://" + r.Host + "/game/" + gameId
+}
+
+func shareGame(w http.ResponseWriter, r *http.Request) {
+	gameId := gameIdParameter(r)
+
+	gameUrl := gameUrl(gameId, r)
+
+	var data pageData
+	data.GameID = gameId
+	data.GameURL = gameUrl
+	data.Encoded = html.EscapeString(gameUrl)
+
+	showTemplatePage("sharegame", data, w)
+}
+
+func qrCodeGenerator(w http.ResponseWriter, r *http.Request) {
+	gameId := gameIdParameter(r)
+
+	gameUrl := gameUrl(gameId, r)
+
+	tempFileName := os.Getenv("TMPDIR") + "/" + gameId + ".png"
+
+	qrcode.WriteFile(gameUrl, qrcode.High, 256, tempFileName)
+	defer os.Remove(tempFileName)
+
+	content, _ := os.ReadFile(tempFileName)
+
+	headers := w.Header()
+	headers.Add("Content-Type", "image/png")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(content))
 }

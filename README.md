@@ -43,4 +43,5 @@ Run tests and show coverage...
 * Delete event
 * Edit keys for games
 * Site logo
+* Share game via QR code
 
