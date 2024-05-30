@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scoresheet</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="preload" as="font">
+<link
+  href="/static/kubernetes-engine-icon.png"
+  rel="icon" 
+  type="image/png" 
+/>
+<link rel="stylesheet" href="/static/scoresheet.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="message">
+			<h1>Delete event for game {{.Game.ID}}</h1>
+		</div>
+
+		<div>{{.Game.AwayTeam}} @ {{.Game.HomeTeam}}, {{.Game.GameDate}}</div>
+
+		<div>
+			&nbsp;<br>
+			Which event do you wish to delete from this game?
+			<br>&nbsp;			
+		</div>
+				
+		<form method="POST" action="/deleteGameEvent">
+			<input type="hidden" id="gameIdField" name="game_id" value="{{.Game.ID}}" />
+			
+			{{range $event := .Game.Events}} 
+				<div>
+					<input type="radio" name="event_summary" value="{{$event.GameTime}} {{$event.HomeAway}} {{$event.EventType}}">
+					{{$event.GameTime}} {{$event.HomeAway}} {{$event.EventType}}
+				</option>
+				</div>
+			{{end}}			
+
+			<br>
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="Delete event">
+		</form>
+
+	</div>
+</body>
+</html>

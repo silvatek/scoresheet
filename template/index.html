@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scoresheet</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="preload" as="font">
+<link
+  href="/static/kubernetes-engine-icon.png"
+  rel="icon" 
+  type="image/png" 
+/>
+<link rel="stylesheet" href="/static/scoresheet.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="message">
+			<h1>{{.Message}}</h1>
+		</div>
+
+		<div id="intro">
+			Use this site to record details of UK recreational ice hockey games.
+		</div>
+
+		<h3>Record new game</h3>
+		<div>Use this to start recording a new game.</div>
+		<form id="newgame" action="/newGame">
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="New game">
+		</form>
+
+		<h3>View existing game</h3>
+		<div>You can recall details of an existing game if you know the game ID.</div>
+		<form id="viewgame" action="/games">
+			<label for="game_id" class="formlabel">Game ID:</label>
+			<input type="text" id="game_id" name="game_id"> <br>
+
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="View game">
+		</form>
+	</div>
+</body>
+</html>

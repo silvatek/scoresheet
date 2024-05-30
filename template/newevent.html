@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scoresheet</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="preload" as="font">
+<link
+  href="/static/kubernetes-engine-icon.png"
+  rel="icon" 
+  type="image/png" 
+/>
+<link rel="stylesheet" href="/static/scoresheet.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="message">
+			<h1>New event for game {{.Game.ID}}</h1>
+		</div>
+		
+		<form method="POST" action="/addEvent">
+			<input type="hidden" id="gameIdField" name="game_id" value="{{.Game.ID}}" />
+
+			<label for="period" class="formlabel">Period:</label>
+			<input type="number" autofocus="true" id="period" name="period" value="{{.Game.Period}}" min="1" max="9"><br>
+
+			<label for="clock_time" class="formlabel">Time:</label>
+			<input type="number" id="minutes" name="minutes" min="0" max="20" size="2"> :
+			<input type="number" id="seconds" name="seconds" min="0" max="59" size="2">
+			(clock time)<br>
+
+			<label for="event_type" class="formlabel">Event:</label>
+			<select id="home_away" name="home_away">
+				<option value="Home">Home</option>
+				<option value="Away">Away</option>
+			</select>
+
+			<select id="event_type" name="event_type">
+				<option value="Goal">Goal</option>
+				<option value="Penalty">Penalty</option>
+			</select>
+			<br>
+
+			<label for="category" class="formlabel">Category:</label>
+			<input type="text" id="category" name="category" maxlength="12" size="12"></br>
+
+			<label for="player" class="formlabel">Player:</label>
+			<input type="number" id="player" name="player" min="1" max="99"><br>
+
+			<label for="assist1" class="formlabel">Assists:</label>
+			<input type="number" id="assist1" name="assist1" min="1" max="99">
+			<input type="number" id="assist2" name="assist2" min="1" max="99">
+			(goals only)
+			<br>
+
+			<label for="assist1" class="formlabel">Minutes:</label>
+			<input type="number" id="minutes" name="minutes" min="2" max="10">
+			(penalties only)
+			<br>
+
+			<br>
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="Submit">
+		</form>
+
+		<div>
+			&nbsp;<br/>
+			Goal categories are "E" (even-handed), "PP" and "PK".		
+		</div>
+		<div>
+			For penalties use a short version of the penalty description such as 
+			"Trip" or "Hook".
+		</div>
+		<div>
+			Note that this site does not currently support recording the time that
+			delayed penalties occurred, or the time that penalities finished.
+		</div>
+
+	</div>	
+</body>
+</html>

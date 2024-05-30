@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scoresheet</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="preload" as="font">
+<link
+  href="/static/kubernetes-engine-icon.png"
+  rel="icon" 
+  type="image/png" 
+/>
+<link rel="stylesheet" href="/static/scoresheet.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="message">
+			<h1>New Game</h1>
+		</div>
+		
+		<form method="POST" action="/addGame">
+
+			<label for="home_team" class="formlabel">Home team:</label>
+			<input type="text" autofocus="true" id="home_team" name="home_team"><br>
+
+			<label for="away_team" class="formlabel">Away team:</label>
+			<input type="text" id="away_team" name="away_team"><br>
+
+			<label for="game_date" class="formlabel">Game date:</label>
+			<input type="text" id="game_date" name="game_date" size="10"> (yyyy-mm-dd)<br>
+
+			<br>
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="Submit">
+		</form>
+
+	</div>
+</body>
+</html>
