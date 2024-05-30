@@ -397,8 +397,14 @@ func gameIdParameter(r *http.Request) string {
 }
 
 func gameUrl(gameId string, r *http.Request) string {
-	proto := strings.ToLower(strings.Split(r.Proto, "/")[0])
-	return proto + "://" + r.Host + "/game/" + gameId
+	schemeHeader, ok := r.Header["X-Forwarded-Proto"]
+	var scheme string
+	if ok {
+		scheme = schemeHeader[0]
+	} else {
+		scheme = strings.ToLower(strings.Split(r.Proto, "/")[0])
+	}
+	return scheme + "://" + r.Host + "/game/" + gameId
 }
 
 func shareGame(w http.ResponseWriter, r *http.Request) {
