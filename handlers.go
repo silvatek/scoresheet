@@ -156,7 +156,31 @@ func gamePage(w http.ResponseWriter, r *http.Request) {
 		data.Error = errorMessage(errorCode)
 	}
 
+	setGameHistoryCookie(gameId, w, r)
+
 	showTemplatePage("game", data, w)
+}
+
+func setGameHistoryCookie(gameId string, w http.ResponseWriter, r *http.Request) {
+	var gameList string
+	current, err := r.Cookie("gameHistory")
+	if err != http.ErrNoCookie {
+		gameList = current.Value
+		logs.debug1(context.Background(), "Loaded game history: %s", gameList)
+	}
+
+	gameList = gameId + " " + strings.Trim(strings.ReplaceAll(gameList, gameId, " "), " ")
+	logs.debug1(context.Background(), "New game history: %s", gameList)
+
+	cookie := http.Cookie{
+		Name:     "gameHistory",
+		Value:    gameList,
+		Path:     "/",
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	}
+
+	http.SetCookie(w, &cookie)
 }
 
 func showErrorPage(error string, w http.ResponseWriter) {
