@@ -1,12 +1,28 @@
 # Ice Hockey Scoresheet Web Application
 
-"Scoresheet" is a Google Cloud Run application that contains allows the user to record the scoresheet details of an Ice Hockey game.
+"Scoresheet" is a Google Cloud Run application that  allows the user to record the scoresheet details of ice hockey games.
+
+It does automatic conversion of clock time to game time, and calculates the game totals such as how many goals were scored by each player.
+
+The site is designed to operate without logging in, so it is not possible to get a list of games; the user needs to know the game ID. Games can also be locked to prevent anyone from editing them without knowing the edit code.
+
+## Code structure
+
+`main.go` is the primary entry point, but delegates most of the work to the http request handlers in `handlers.go`. 
+
+The primary game logic is in `game.go`, backed by a "datastore" interface defined in `datastore.go` which includes a test datastore implementation. 
+
+A "real" datastore built using Google Cloud Platform's Firestore is implemented in `firestore.go`, and support for Google Cloud logging (with fallback to console if not running on GCP) is in `logging.go`.
+
+The templates for html pages are in `templates` and static content (stylesheet, images, etc) is in 
+`templates/static`.
 
 ## Commands
+Run tests and show coverage...
 
-`go test -coverprofile=cover.out`
+```go test -coverprofile=cover.out```
 
-`go tool cover -html=cover.out`
+```go tool cover -html=cover.out```
 
 ## Tracking
 
@@ -26,4 +42,5 @@
 * Web interface to start a new game
 * Delete event
 * Edit keys for games
+* Site logo
 

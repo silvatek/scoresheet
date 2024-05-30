@@ -4,13 +4,14 @@
 <meta charset=utf-8>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scoresheet</title>
+<link href="/static/logo.svg" rel="icon" type="image/svg" />
 <link rel="stylesheet" href="/static/scoresheet.css">
 </head>
 
 <body>
 	<div class="container">
 		<div>
-			<h1>{{.Game.Title}}</h1>
+			<h1>{{.Game.ID}}</h1>
 			{{if .Game.GameDate }}
 			<div id="game_summary">{{.Game.AwayTeam}} @ {{.Game.HomeTeam}}, {{.Game.GameDate}}</div>
 			{{end}}
