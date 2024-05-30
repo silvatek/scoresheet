@@ -42,11 +42,11 @@
 		<div>You have recently accessed the following games on this device:-</div>
 		<ul>
 			{{range $game := .History}} 
+			{{if $game}}
 				<li>
-					{{if $game}}
 					<a href="/game/{{$game}}">{{$game}}</a>
-					{{end}}
 				</li>
+				{{end}}
 			{{end}}
 		</ul>
 		{{end}}
