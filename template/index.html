@@ -43,7 +43,9 @@
 		<ul>
 			{{range $game := .History}} 
 				<li>
+					{{if $game}}
 					<a href="/game/{{$game}}">{{$game}}</a>
+					{{end}}
 				</li>
 			{{end}}
 		</ul>
