@@ -20,7 +20,7 @@ COPY . ./
 # Skaffold passes in debug-oriented compiler flags
 ARG SKAFFOLD_GO_GCFLAGS
 RUN echo "Go gcflags: ${SKAFFOLD_GO_GCFLAGS}"
-RUN go test .
+RUN go test . -v
 RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -mod=readonly -v -o /app
 
 # Now create separate deployment image
