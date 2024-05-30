@@ -28,6 +28,7 @@ Run tests and show coverage...
 
 ### To-Do
 
+* Store game history in a cookie and allow user to go back to recent ones
 * Cache parsed templates
 
 ### Done
