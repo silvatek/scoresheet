@@ -14,11 +14,11 @@ body {
 	justify-content: space-between; */
  }
 
-h1 {
+/* h1 {
 	font-size: 24px;
 	font-weight: bold;
 	margin-bottom: 0px;
-}
+} */
 
 .h1image {
 	padding-top: 32px;
@@ -28,7 +28,7 @@ h1 {
 	margin-right: 12px;
 }
 
-h2 {
+/* h2 {
 	font-size: 18px;
 	font-weight: normal;
 	margin-top: 4px;
@@ -37,7 +37,7 @@ h2 {
 h3 {
 	font-size: 20px;
 	margin-bottom: 0px;
-}
+} */
 
 .scoreboard {
 	font-size: xx-large;
@@ -56,13 +56,14 @@ a:hover {
 	margin-top: 8px;
 	margin-bottom: 8px;
 }
-
+/*
 .container {
 	max-width: 700px;
 	margin-left: auto;
 	margin-right: auto;
 } 
-
+*/
+/*
 .hero {
 	margin-top: 172px;
 }
@@ -78,7 +79,7 @@ a:hover {
 	text-align: center;
 	margin-bottom: 24px;
 }
-
+*/
 .details {
 	clear: both;
 	height: 400px;
@@ -105,7 +106,7 @@ code {
 	padding: 0 6px;
 	font-weight: 500;
 }
-
+/*
 .cta {
 	display: inline-block;
 }
@@ -123,7 +124,7 @@ code {
 .cta a:hover {
     background-color: rgb(66, 133, 244, 0.9);
 }
-
+*/
 .formlabel {
 	min-width: 20%;
 	display: inline-block;
@@ -160,7 +161,7 @@ table {
 	font-weight: bold;
 	color: red;
 }
-
+/*
 @media (max-width: 600px) {
     .hero .logo {
         float: initial;
@@ -178,6 +179,7 @@ table {
         margin-bottom: 24px;
 	}
 }
+*/
 /*
 @media (prefers-color-scheme: dark) {
     body {
