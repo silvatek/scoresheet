@@ -207,13 +207,13 @@ func showErrorPage(error string, w http.ResponseWriter) {
 }
 
 func showTemplatePage(templateName string, data any, w http.ResponseWriter) {
-	t, err := template.ParseFiles("template/" + templateName + ".html")
+	t, err := template.ParseFiles("template/base.html", "template/"+templateName+".html")
 	if err != nil {
 		logs.error("Error parsing template: %+v", err)
 		os.Exit(-2)
 	}
 
-	if err := t.Execute(w, data); err != nil {
+	if err := t.ExecuteTemplate(w, "base", data); err != nil {
 		msg := http.StatusText(http.StatusInternalServerError)
 		logs.debug("template.Execute: %v", err)
 		http.Error(w, msg, http.StatusInternalServerError)
