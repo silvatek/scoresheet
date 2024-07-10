@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const defaultAddr = ":8080"
+const defaultAddr = "localhost:8080"
 
 var dataStore DataStore
 var logs Logger
@@ -26,9 +26,9 @@ func main() {
 	}
 	logs.info("Server listening on port %s", addr)
 
-	addHandlers()
+	r := addHandlers()
 
-	if err := http.ListenAndServe(addr, nil); err != nil {
+	if err := http.ListenAndServe(addr, r); err != nil {
 		logs.error("Server listening error: %+v", err)
 		os.Exit(-5)
 	}

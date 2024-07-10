@@ -12,6 +12,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/gorilla/mux"
 	"github.com/skip2/go-qrcode"
 )
 
@@ -26,27 +27,25 @@ type pageData struct {
 	History []string
 }
 
-func addHandlers() {
-	http.HandleFunc("/", homePage)
-	http.HandleFunc("/game/", gamePage)
-	http.HandleFunc("/games", gameRedirect)
-	http.HandleFunc("/newEvent", newEventPage)
-	http.HandleFunc("/addEvent", addEventPost)
-	http.HandleFunc("/newGame", newGamePage)
-	http.HandleFunc("/addGame", addGamePost)
-	http.HandleFunc("/deleteEvent", deleteEventPage)
-	http.HandleFunc("/deleteGameEvent", deleteEventPost)
-	http.HandleFunc("/lockGame", lockGame)
-	http.HandleFunc("/unlockGame", unlockGame)
-	http.HandleFunc("/sharegame", shareGame)
-	http.HandleFunc("/qrcode", qrCodeGenerator)
+func addHandlers() *mux.Router {
+	r := mux.NewRouter()
+	r.HandleFunc("/", homePage)
+	r.HandleFunc("/game/{id}", gamePage)
+	r.HandleFunc("/games", gameRedirect)
+	r.HandleFunc("/newEvent", newEventPage)
+	r.HandleFunc("/addEvent", addEventPost)
+	r.HandleFunc("/newGame", newGamePage)
+	r.HandleFunc("/addGame", addGamePost)
+	r.HandleFunc("/deleteEvent", deleteEventPage)
+	r.HandleFunc("/deleteGameEvent", deleteEventPost)
+	r.HandleFunc("/lockGame", lockGame)
+	r.HandleFunc("/unlockGame", unlockGame)
+	r.HandleFunc("/sharegame", shareGame)
+	r.HandleFunc("/qrcode", qrCodeGenerator)
 
-	addStaticAssetHandler()
-}
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("template/static"))))
 
-func addStaticAssetHandler() {
-	fs := http.FileServer(http.Dir("template/static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	return r
 }
 
 // show home/index page
