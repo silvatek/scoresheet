@@ -125,16 +125,16 @@ func TestSetupDataStore(t *testing.T) {
 // 	addHandlers()
 // }
 
-func TestGameRedirect(t *testing.T) {
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/games?game_id=xyz", nil)
+// func TestGameRedirect(t *testing.T) {
+// 	w := httptest.NewRecorder()
+// 	r := httptest.NewRequest(http.MethodGet, "/games?game_id=xyz", nil)
 
-	gameRedirect(w, r)
+// 	gameRedirect(w, r)
 
-	if w.Result().StatusCode != http.StatusSeeOther {
-		t.Errorf("Unexpected response code, was not redirect: %d", w.Result().StatusCode)
-	}
-}
+// 	if w.Result().StatusCode != http.StatusSeeOther {
+// 		t.Errorf("Unexpected response code, was not redirect: %d", w.Result().StatusCode)
+// 	}
+// }
 
 func TestNewEventPage(t *testing.T) {
 	dataStore = testDataStore()

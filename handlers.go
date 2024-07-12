@@ -29,16 +29,19 @@ type pageData struct {
 }
 
 type Template struct {
-	templates *template.Template
+	//templates *template.Template
 }
 
 func addRoutes(c *echo.Echo) {
 	c.Renderer = &Template{}
 
-	c.Static("/static", "static")
+	c.Static("/static", "template/static")
 
 	c.GET("/", homePageE)
+	c.GET("/games", gameRedirect)
 	c.GET("/game/:id", gamePage)
+	c.GET("/sharegame", shareGame)
+	c.GET("/qrcode", qrCodeGenerator)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -105,10 +108,10 @@ func homePageE(c echo.Context) error {
 }
 
 // Redirect from query parameter URL to path parameter URL
-func gameRedirect(w http.ResponseWriter, r *http.Request) {
-	logs.info("Game redirect: %s", r.RequestURI)
-	gameId := strings.ToUpper(strings.TrimPrefix(r.RequestURI, "/games?game_id="))
-	http.Redirect(w, r, "/game/"+gameId, http.StatusSeeOther)
+func gameRedirect(c echo.Context) error {
+	logs.info("Game redirect: %s", c.Path())
+	gameId := strings.ToUpper(c.QueryParam("game_id"))
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
 func lastPathElement(uri string) string {
@@ -476,33 +479,28 @@ func gameUrl(gameId string, r *http.Request) string {
 	return scheme + "://" + r.Host + "/game/" + gameId
 }
 
-func shareGame(w http.ResponseWriter, r *http.Request) {
-	gameId := gameIdParameter(r)
+func shareGame(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-	gameUrl := gameUrl(gameId, r)
+	gameUrl := gameUrl(gameId, c.Request())
 
 	var data pageData
 	data.GameID = gameId
 	data.GameURL = gameUrl
 	data.Encoded = html.EscapeString(gameUrl)
 
-	showTemplatePage("sharegame", data, w)
+	return c.Render(http.StatusOK, "sharegame", data)
 }
 
-func qrCodeGenerator(w http.ResponseWriter, r *http.Request) {
-	gameId := gameIdParameter(r)
+func qrCodeGenerator(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-	gameUrl := gameUrl(gameId, r)
+	gameUrl := gameUrl(gameId, c.Request())
 
-	tempFileName := os.Getenv("TMPDIR") + "/" + gameId + ".png"
-
-	qrcode.WriteFile(gameUrl, qrcode.High, 320, tempFileName)
-	defer os.Remove(tempFileName)
-
-	content, _ := os.ReadFile(tempFileName)
-
-	headers := w.Header()
+	headers := c.Response().Header()
 	headers.Add("Content-Type", "image/png")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(content))
+	c.Response().WriteHeader(http.StatusOK)
+
+	q, _ := qrcode.New(gameUrl, qrcode.High)
+	return q.Write(320, c.Response())
 }
