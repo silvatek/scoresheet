@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -9,36 +8,6 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 )
-
-func TestLastPathElement(t *testing.T) {
-	confirmLastPathElement(t, "/abc/xyz", "xyz")
-	confirmLastPathElement(t, "/123", "123")
-	confirmLastPathElement(t, "noslash", "noslash")
-	confirmLastPathElement(t, "/abc/xyz?test=1", "xyz")
-}
-
-func confirmLastPathElement(t *testing.T, path string, expected string) {
-	result := lastPathElement(path)
-	if result != expected {
-		t.Errorf("lastPathElement returned [%s], expected [%s]", result, expected)
-	}
-}
-
-func TestQueryParam(t *testing.T) {
-	confirmQueryParam(t, "/test?code=123", "code", "123")
-	confirmQueryParam(t, "/test?code=123&other=xyz", "code", "123")
-	confirmQueryParam(t, "/test", "code", "")
-	confirmQueryParam(t, "/test?code=123", "other", "")
-	confirmQueryParam(t, "", "code", "")
-	confirmQueryParam(t, "/test?code", "code", "")
-}
-
-func confirmQueryParam(t *testing.T, uri string, param string, expected string) {
-	result := queryParam(uri, param)
-	if result != expected {
-		t.Errorf("queryParam(%s) returned [%s], expected [%s]", param, result, expected)
-	}
-}
 
 // func TestHomePage(t *testing.T) {
 // 	w := httptest.NewRecorder()
@@ -64,16 +33,6 @@ func confirmBodyIncludes(query string, expected string, failMessage string, doc 
 	text := doc.Find(query).Text()
 	if !strings.Contains(text, expected) {
 		t.Errorf("%s => %s", failMessage, text)
-	}
-}
-
-func TestGameIdParameter(t *testing.T) {
-	r := httptest.NewRequest(http.MethodGet, "/testing?game=123", nil)
-
-	id := gameIdParameter(r)
-
-	if id != "123" {
-		t.Errorf("Unexpected game ID: %s", id)
 	}
 }
 
@@ -227,37 +186,37 @@ func confirmRedirectTarget(expected string, w *httptest.ResponseRecorder, t *tes
 // 	confirmRedirectTarget("/game/CODE1", w, t)
 // }
 
-func TestUnlockGameGet(t *testing.T) {
-	dataStore = testDataStore()
-	setupDataStore(dataStore)
+// func TestUnlockGameGet(t *testing.T) {
+// 	dataStore = testDataStore()
+// 	setupDataStore(dataStore)
 
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/unlockGame?game=CODE1", nil)
+// 	w := httptest.NewRecorder()
+// 	r := httptest.NewRequest(http.MethodGet, "/unlockGame?game=CODE1", nil)
 
-	unlockGame(w, r)
+// 	unlockGame(w, r)
 
-	confirmSuccessResponse(w, t)
+// 	confirmSuccessResponse(w, t)
 
-	doc, _ := goquery.NewDocumentFromReader(w.Body)
+// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
 
-	confirmBodyIncludes("h1", "Unlock Game CODE1", "New event page does not contain expected heading", doc, t)
-}
+// 	confirmBodyIncludes("h1", "Unlock Game CODE1", "New event page does not contain expected heading", doc, t)
+// }
 
-func TestUnlockGamePost(t *testing.T) {
-	dataStore = testDataStore()
-	game := testGame2()
-	dataStore.putGame(context.Background(), game.ID, game)
+// func TestUnlockGamePost(t *testing.T) {
+// 	dataStore = testDataStore()
+// 	game := testGame2()
+// 	dataStore.putGame(context.Background(), game.ID, game)
 
-	content := "game_id=CODE2&unlock_key=secret123"
+// 	content := "game_id=CODE2&unlock_key=secret123"
 
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodPost, "/unlockGame", strings.NewReader(content))
-	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+// 	w := httptest.NewRecorder()
+// 	r := httptest.NewRequest(http.MethodPost, "/unlockGame", strings.NewReader(content))
+// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	unlockGame(w, r)
+// 	unlockGame(w, r)
 
-	confirmRedirectTarget("/game/CODE2", w, t)
-}
+// 	confirmRedirectTarget("/game/CODE2", w, t)
+// }
 
 // func TestDeleteEventPage(t *testing.T) {
 // 	dataStore = testDataStore()

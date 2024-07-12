@@ -50,32 +50,13 @@ func addRoutes(c *echo.Echo) {
 	c.POST("/deleteGameEvent", deleteEventPost)
 	c.GET("/lockGame", lockGamePage)
 	c.POST("/lockGame", lockGamePost)
+	c.GET("/unlockGame", unlockGamePage)
+	c.POST("/unlockGame", unlockGamePost)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return showTemplatePage(name, data, w)
 }
-
-// func addHandlers() *mux.Router {
-// 	r := mux.NewRouter()
-// 	r.HandleFunc("/", homePage)
-// 	r.HandleFunc("/game/{id}", gamePage)
-// 	r.HandleFunc("/games", gameRedirect)
-// 	r.HandleFunc("/newEvent", newEventPage)
-// 	r.HandleFunc("/addEvent", addEventPost)
-// 	r.HandleFunc("/newGame", newGamePage)
-// 	r.HandleFunc("/addGame", addGamePost)
-// 	r.HandleFunc("/deleteEvent", deleteEventPage)
-// 	r.HandleFunc("/deleteGameEvent", deleteEventPost)
-// 	r.HandleFunc("/lockGame", lockGame)
-// 	r.HandleFunc("/unlockGame", unlockGame)
-// 	r.HandleFunc("/sharegame", shareGame)
-// 	r.HandleFunc("/qrcode", qrCodeGenerator)
-
-// 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("template/static"))))
-
-// 	return r
-// }
 
 func showTemplatePage(templateName string, data any, w io.Writer) error {
 	t, err := template.ParseFiles("template/base.html", "template/"+templateName+".html")
@@ -110,44 +91,6 @@ func gameRedirect(c echo.Context) error {
 	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
-func lastPathElement(uri string) string {
-	// strip query parameters
-	queryStart := strings.Index(uri, "?")
-	if queryStart > -1 {
-		uri = uri[:queryStart]
-	}
-	// return everything after the last slash
-	lastSlash := strings.LastIndex(uri, "/")
-	if lastSlash == -1 {
-		return uri
-	}
-	return uri[lastSlash+1:]
-}
-
-func queryParam(uri string, param string) string {
-	queryStart := strings.Index(uri, "?")
-	if queryStart == -1 {
-		return ""
-	}
-	uri = uri[queryStart+1:]
-
-	paramStart := strings.Index(uri, param+"=")
-	if paramStart == -1 {
-		return ""
-	}
-	paramVal := uri[paramStart:]
-
-	valueStart := strings.Index(uri, "=")
-	paramVal = paramVal[valueStart+1:]
-
-	nextStart := strings.Index(paramVal, "&")
-	if nextStart > 0 {
-		paramVal = paramVal[0:nextStart]
-	}
-
-	return paramVal
-}
-
 func errorMessage(errorCode string) string {
 	if errorCode == "8001" {
 		return "Unable to unlock game for editing"
@@ -180,17 +123,6 @@ func ctx(c echo.Context) context.Context {
 		RemoteAddr: c.RealIP(),
 	}
 	return context.WithValue(c.Request().Context(), GameIdKey, values)
-}
-
-func gameRequestContext(gameId string, r *http.Request) context.Context {
-	values := GameRequestContext{
-		GameId:     gameId,
-		RemoteAddr: r.RemoteAddr,
-	}
-	if r.Header["X-Forwarded-For"] != nil {
-		values.RemoteAddr = r.Header["X-Forwarded-For"][0]
-	}
-	return context.WithValue(r.Context(), GameIdKey, values)
 }
 
 func gamePage(c echo.Context) error {
@@ -430,43 +362,35 @@ func lockGamePost(c echo.Context) error {
 	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
-func unlockGame(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		r.ParseForm()
-		gameId := r.Form.Get("game_id")
+func unlockGamePage(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-		ctx := gameRequestContext(gameId, r)
-
-		game := dataStore.getGame(ctx, gameId)
-
-		userKey := r.Form.Get("unlock_key")
-
-		var errorSuffix string
-
-		if game.LockedWith == userKey {
-			game.LockedWith = ""
-			dataStore.putGame(ctx, gameId, game)
-		} else {
-			errorSuffix = "?e=8001"
-		}
-
-		http.Redirect(w, r, "/game/"+gameId+errorSuffix, http.StatusSeeOther)
-	} else {
-		gameId := gameIdParameter(r)
-
-		ctx := gameRequestContext(gameId, r)
-
-		game := dataStore.getGame(ctx, gameId)
-		data := pageData{
-			Game: game,
-		}
-		showTemplatePage("unlockgame", data, w)
+	game := dataStore.getGame(ctx(c), gameId)
+	data := pageData{
+		Game: game,
 	}
+	return c.Render(http.StatusOK, "unlockgame", data)
 }
 
-func gameIdParameter(r *http.Request) string {
-	params := strings.Split(r.RequestURI, "?")[1]
-	return strings.ToUpper(strings.TrimPrefix(params, "game="))
+func unlockGamePost(c echo.Context) error {
+	gameId := c.FormValue("game_id")
+
+	ctx := ctx(c)
+
+	game := dataStore.getGame(ctx, gameId)
+
+	userKey := c.FormValue("unlock_key")
+
+	var errorSuffix string
+
+	if game.LockedWith == userKey {
+		game.LockedWith = ""
+		dataStore.putGame(ctx, gameId, game)
+	} else {
+		errorSuffix = "?e=8001"
+	}
+
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId+errorSuffix)
 }
 
 func gameUrl(gameId string, r *http.Request) string {
