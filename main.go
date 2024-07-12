@@ -1,8 +1,10 @@
 package main
 
 import (
-	"net/http"
+	//"net/http"
 	"os"
+
+	"github.com/labstack/echo/v4"
 )
 
 const defaultAddr = "localhost:8080"
@@ -26,12 +28,17 @@ func main() {
 	}
 	logs.info("Server listening on port %s", addr)
 
-	r := addHandlers()
+	e := echo.New()
 
-	if err := http.ListenAndServe(addr, r); err != nil {
-		logs.error("Server listening error: %+v", err)
-		os.Exit(-5)
-	}
+	addRoutes(e)
+
+	e.Start(addr)
+	// r := addHandlers()
+
+	// if err := http.ListenAndServe(addr, r); err != nil {
+	// 	logs.error("Server listening error: %+v", err)
+	// 	os.Exit(-5)
+	// }
 
 }
 

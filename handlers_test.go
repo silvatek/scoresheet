@@ -77,22 +77,22 @@ func TestGameIdParameter(t *testing.T) {
 	}
 }
 
-func TestGamePage(t *testing.T) {
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/game/CODE1", nil)
+// func TestGamePage(t *testing.T) {
+// 	w := httptest.NewRecorder()
+// 	r := httptest.NewRequest(http.MethodGet, "/game/CODE1", nil)
 
-	dataStore = testDataStore()
-	addTestGames(dataStore)
+// 	dataStore = testDataStore()
+// 	addTestGames(dataStore)
 
-	gamePage(w, r)
+// 	gamePage(w, r)
 
-	confirmSuccessResponse(w, t)
+// 	confirmSuccessResponse(w, t)
 
-	doc, _ := goquery.NewDocumentFromReader(w.Body)
+// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
 
-	confirmBodyIncludes("#game_summary", "Blues @ Reds, 2024-05-27", "Home page does not contain expected heading", doc, t)
-	confirmBodyIncludes("td", "14:25 (25:35)", "Home page does not contain expected penalty", doc, t)
-}
+// 	confirmBodyIncludes("#game_summary", "Blues @ Reds, 2024-05-27", "Home page does not contain expected heading", doc, t)
+// 	confirmBodyIncludes("td", "14:25 (25:35)", "Home page does not contain expected penalty", doc, t)
+// }
 
 func TestNewGamePage(t *testing.T) {
 	w := httptest.NewRecorder()
@@ -121,9 +121,9 @@ func TestSetupDataStore(t *testing.T) {
 	}
 }
 
-func TestAddHandlers(t *testing.T) {
-	addHandlers()
-}
+// func TestAddHandlers(t *testing.T) {
+// 	addHandlers()
+// }
 
 func TestGameRedirect(t *testing.T) {
 	w := httptest.NewRecorder()

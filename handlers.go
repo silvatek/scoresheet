@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 	"html"
+	"io"
 
 	"os"
 
+	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
-	"text/template"
 
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 	"github.com/skip2/go-qrcode"
 )
 
@@ -27,25 +28,58 @@ type pageData struct {
 	History []string
 }
 
-func addHandlers() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/", homePage)
-	r.HandleFunc("/game/{id}", gamePage)
-	r.HandleFunc("/games", gameRedirect)
-	r.HandleFunc("/newEvent", newEventPage)
-	r.HandleFunc("/addEvent", addEventPost)
-	r.HandleFunc("/newGame", newGamePage)
-	r.HandleFunc("/addGame", addGamePost)
-	r.HandleFunc("/deleteEvent", deleteEventPage)
-	r.HandleFunc("/deleteGameEvent", deleteEventPost)
-	r.HandleFunc("/lockGame", lockGame)
-	r.HandleFunc("/unlockGame", unlockGame)
-	r.HandleFunc("/sharegame", shareGame)
-	r.HandleFunc("/qrcode", qrCodeGenerator)
+type Template struct {
+	templates *template.Template
+}
 
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("template/static"))))
+func addRoutes(c *echo.Echo) {
+	c.Renderer = &Template{}
 
-	return r
+	c.Static("/static", "static")
+
+	c.GET("/", homePageE)
+	c.GET("/game/:id", gamePage)
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return showTemplatePage(name, data, w)
+}
+
+// func addHandlers() *mux.Router {
+// 	r := mux.NewRouter()
+// 	r.HandleFunc("/", homePage)
+// 	r.HandleFunc("/game/{id}", gamePage)
+// 	r.HandleFunc("/games", gameRedirect)
+// 	r.HandleFunc("/newEvent", newEventPage)
+// 	r.HandleFunc("/addEvent", addEventPost)
+// 	r.HandleFunc("/newGame", newGamePage)
+// 	r.HandleFunc("/addGame", addGamePost)
+// 	r.HandleFunc("/deleteEvent", deleteEventPage)
+// 	r.HandleFunc("/deleteGameEvent", deleteEventPost)
+// 	r.HandleFunc("/lockGame", lockGame)
+// 	r.HandleFunc("/unlockGame", unlockGame)
+// 	r.HandleFunc("/sharegame", shareGame)
+// 	r.HandleFunc("/qrcode", qrCodeGenerator)
+
+// 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("template/static"))))
+
+// 	return r
+// }
+
+func showTemplatePage(templateName string, data any, w io.Writer) error {
+	t, err := template.ParseFiles("template/base.html", "template/"+templateName+".html")
+	if err != nil {
+		logs.error("Error parsing template: %+v", err)
+		os.Exit(-2)
+	}
+
+	if err := t.ExecuteTemplate(w, "base", data); err != nil {
+		//msg := http.StatusText(http.StatusInternalServerError)
+		logs.error("template.Execute: %v", err)
+		//http.Error(w, msg, http.StatusInternalServerError)
+	}
+
+	return err
 }
 
 // show home/index page
@@ -58,6 +92,16 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	showTemplatePage("index", data, w)
+}
+
+func homePageE(c echo.Context) error {
+	logs.info("Received request: %s", c.Path())
+
+	data := pageData{
+		Message: "Ice Hockey Scoresheet",
+	}
+
+	return c.Render(http.StatusOK, "index", data)
 }
 
 // Redirect from query parameter URL to path parameter URL
@@ -135,31 +179,31 @@ func gameRequestContext(gameId string, r *http.Request) context.Context {
 	return context.WithValue(r.Context(), GameIdKey, values)
 }
 
-func gamePage(w http.ResponseWriter, r *http.Request) {
-	gameId := lastPathElement(r.URL.Path)
+func gamePage(c echo.Context) error {
+	gameId := c.Param("id")
 
-	ctx := gameRequestContext(gameId, r)
+	ctx := context.Background() // gameRequestContext(gameId, r)
 	logs.info1(ctx, "GET for game ID: %s", gameId)
 
 	var data pageData
 	data.Game = dataStore.getGame(ctx, gameId)
 
 	if data.Game.ID != gameId {
-		showErrorPage(fmt.Sprintf("Game not found: %s", gameId), w)
-		return
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Game not found: %s", gameId))
 	}
 
 	SortEvents(&(data.Game))
 	data.Summary = summarise(data.Game)
 
-	errorCode := queryParam(r.RequestURI, "e")
-	if errorCode != "" {
-		data.Error = errorMessage(errorCode)
-	}
+	// errorCode := queryParam(r.RequestURI, "e")
+	// if errorCode != "" {
+	// 	data.Error = errorMessage(errorCode)
+	// }
 
-	setGameHistoryCookie(gameId, w, r)
+	// setGameHistoryCookie(gameId, w, r)
 
-	showTemplatePage("game", data, w)
+	//showTemplatePage("game", data, w)
+	return c.Render(http.StatusOK, "game", data)
 }
 
 func setGameHistoryCookie(gameId string, w http.ResponseWriter, r *http.Request) {
@@ -203,20 +247,6 @@ func showErrorPage(error string, w http.ResponseWriter) {
 	var data pageData
 	data.Error = error
 	showTemplatePage("error", data, w)
-}
-
-func showTemplatePage(templateName string, data any, w http.ResponseWriter) {
-	t, err := template.ParseFiles("template/base.html", "template/"+templateName+".html")
-	if err != nil {
-		logs.error("Error parsing template: %+v", err)
-		os.Exit(-2)
-	}
-
-	if err := t.ExecuteTemplate(w, "base", data); err != nil {
-		msg := http.StatusText(http.StatusInternalServerError)
-		logs.debug("template.Execute: %v", err)
-		http.Error(w, msg, http.StatusInternalServerError)
-	}
 }
 
 func newEventPage(w http.ResponseWriter, r *http.Request) {
