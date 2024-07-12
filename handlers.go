@@ -37,11 +37,13 @@ func addRoutes(c *echo.Echo) {
 
 	c.Static("/static", "template/static")
 
-	c.GET("/", homePageE)
+	c.GET("/", homePage)
 	c.GET("/games", gameRedirect)
 	c.GET("/game/:id", gamePage)
 	c.GET("/sharegame", shareGame)
 	c.GET("/qrcode", qrCodeGenerator)
+	c.GET("/newEvent", newEventPage)
+	c.POST("/addEvent", addEventPost)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -85,19 +87,7 @@ func showTemplatePage(templateName string, data any, w io.Writer) error {
 	return err
 }
 
-// show home/index page
-func homePage(w http.ResponseWriter, r *http.Request) {
-	logs.info("Received request: %s %s", r.Method, r.URL.Path)
-
-	data := pageData{
-		Message: "Ice Hockey Scoresheet",
-		History: gameHistory(r),
-	}
-
-	showTemplatePage("index", data, w)
-}
-
-func homePageE(c echo.Context) error {
+func homePage(c echo.Context) error {
 	logs.info("Received request: %s", c.Path())
 
 	data := pageData{
@@ -171,6 +161,21 @@ type GameRequestContext struct {
 	Request    *http.Request
 }
 
+func ctx(c echo.Context) context.Context {
+	gameId := c.Param("gameId")
+	if gameId == "" {
+		gameId = c.QueryParam("game_id")
+	}
+	if gameId == "" {
+		gameId = c.QueryParam("game")
+	}
+	values := GameRequestContext{
+		GameId:     gameId,
+		RemoteAddr: c.RealIP(),
+	}
+	return context.WithValue(c.Request().Context(), GameIdKey, values)
+}
+
 func gameRequestContext(gameId string, r *http.Request) context.Context {
 	values := GameRequestContext{
 		GameId:     gameId,
@@ -185,7 +190,7 @@ func gameRequestContext(gameId string, r *http.Request) context.Context {
 func gamePage(c echo.Context) error {
 	gameId := c.Param("id")
 
-	ctx := context.Background() // gameRequestContext(gameId, r)
+	ctx := ctx(c)
 	logs.info1(ctx, "GET for game ID: %s", gameId)
 
 	var data pageData
@@ -205,7 +210,6 @@ func gamePage(c echo.Context) error {
 
 	// setGameHistoryCookie(gameId, w, r)
 
-	//showTemplatePage("game", data, w)
 	return c.Render(http.StatusOK, "game", data)
 }
 
@@ -252,52 +256,49 @@ func showErrorPage(error string, w http.ResponseWriter) {
 	showTemplatePage("error", data, w)
 }
 
-func newEventPage(w http.ResponseWriter, r *http.Request) {
-	gameId := gameIdParameter(r)
+func newEventPage(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-	ctx := gameRequestContext(gameId, r)
+	ctx := context.Background() //gameRequestContext(gameId, r)
 	logs.debug1(ctx, "Showing new event page for game %s", gameId)
 
 	game := dataStore.getGame(ctx, gameId)
 
 	if game.ID != gameId {
-		showErrorPage(fmt.Sprintf("Game not found when adding event: %s", gameId), w)
-		return
+		return c.Redirect(http.StatusNotFound, fmt.Sprintf("Game not found when adding event: %s", gameId))
 	}
 
 	data := pageData{
 		Game: game,
 	}
 
-	showTemplatePage("newevent", data, w)
+	return c.Render(http.StatusOK, "newevent", data)
 }
 
 func newGamePage(w http.ResponseWriter, r *http.Request) {
 	showTemplatePage("newgame", "", w)
 }
 
-func addEventPost(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+func addEventPost(c echo.Context) error {
+	gameId := c.FormValue("game_id")
+	playerId, _ := strconv.Atoi(c.FormValue("player"))
 
-	gameId := r.Form.Get("game_id")
-	playerId, _ := strconv.Atoi(r.Form.Get("player"))
-
-	ctx := gameRequestContext(gameId, r)
+	ctx := ctx(c)
 	logs.debug1(ctx, "Received new event data, Game ID = %s, Player = %d, Event = %s",
-		gameId, playerId, r.Form.Get("event_type"))
+		gameId, playerId, c.FormValue("event_type"))
 
 	game := dataStore.getGame(ctx, gameId)
 
-	period, _ := strconv.Atoi(r.Form.Get("period"))
-	clockTime := r.Form.Get("minutes") + ":" + r.Form.Get("seconds")
-	homeAway := r.Form.Get("home_away")
-	category := r.Form.Get("category")
+	period, _ := strconv.Atoi(c.FormValue("period"))
+	clockTime := c.FormValue("minutes") + ":" + c.FormValue("seconds")
+	homeAway := c.FormValue("home_away")
+	category := c.FormValue("category")
 
-	assist1, _ := strconv.Atoi(r.Form.Get("assist1"))
-	assist2, _ := strconv.Atoi(r.Form.Get("assist2"))
-	minutes, _ := strconv.Atoi(r.Form.Get("minutes"))
+	assist1, _ := strconv.Atoi(c.FormValue("assist1"))
+	assist2, _ := strconv.Atoi(c.FormValue("assist2"))
+	minutes, _ := strconv.Atoi(c.FormValue("minutes"))
 
-	if r.Form.Get("event_type") == "Penalty" {
+	if c.FormValue("event_type") == "Penalty" {
 		AddPenalty(&game, period, EventTime(clockTime), homeAway, playerId, minutes, category)
 	} else {
 		AddGoal(&game, period, EventTime(clockTime), homeAway, playerId, assist1, assist2, category)
@@ -305,7 +306,7 @@ func addEventPost(w http.ResponseWriter, r *http.Request) {
 
 	dataStore.putGame(ctx, gameId, game)
 
-	http.Redirect(w, r, "/game/"+gameId, http.StatusSeeOther)
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
 func addGamePost(w http.ResponseWriter, r *http.Request) {

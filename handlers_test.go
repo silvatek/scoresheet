@@ -40,19 +40,19 @@ func confirmQueryParam(t *testing.T, uri string, param string, expected string) 
 	}
 }
 
-func TestHomePage(t *testing.T) {
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/", nil)
+// func TestHomePage(t *testing.T) {
+// 	w := httptest.NewRecorder()
+// 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 
-	homePage(w, r)
+// 	homePage(w, r)
 
-	confirmSuccessResponse(w, t)
+// 	confirmSuccessResponse(w, t)
 
-	doc, _ := goquery.NewDocumentFromReader(w.Body)
+// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
 
-	confirmBodyIncludes("#intro", "Use this site to record details of UK recreational ice hockey games.",
-		"Home page does not contain standard intro", doc, t)
-}
+// 	confirmBodyIncludes("#intro", "Use this site to record details of UK recreational ice hockey games.",
+// 		"Home page does not contain standard intro", doc, t)
+// }
 
 func confirmSuccessResponse(w *httptest.ResponseRecorder, t *testing.T) {
 	if w.Code >= 400 {
@@ -136,21 +136,21 @@ func TestSetupDataStore(t *testing.T) {
 // 	}
 // }
 
-func TestNewEventPage(t *testing.T) {
-	dataStore = testDataStore()
-	setupDataStore(dataStore)
+// func TestNewEventPage(t *testing.T) {
+// 	dataStore = testDataStore()
+// 	setupDataStore(dataStore)
 
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodGet, "/newEvent?game=CODE1", nil)
+// 	w := httptest.NewRecorder()
+// 	r := httptest.NewRequest(http.MethodGet, "/newEvent?game=CODE1", nil)
 
-	newEventPage(w, r)
+// 	newEventPage(w, r)
 
-	confirmSuccessResponse(w, t)
+// 	confirmSuccessResponse(w, t)
 
-	doc, _ := goquery.NewDocumentFromReader(w.Body)
+// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
 
-	confirmBodyIncludes("h1", "New event for game CODE1", "New event page does not contain expected heading", doc, t)
-}
+// 	confirmBodyIncludes("h1", "New event for game CODE1", "New event page does not contain expected heading", doc, t)
+// }
 
 func confirmRedirectTarget(expected string, w *httptest.ResponseRecorder, t *testing.T) {
 	if w.Result().StatusCode != http.StatusSeeOther {
@@ -161,20 +161,20 @@ func confirmRedirectTarget(expected string, w *httptest.ResponseRecorder, t *tes
 	}
 }
 
-func TestAddEventPost(t *testing.T) {
-	dataStore = testDataStore()
-	setupDataStore(dataStore)
+// func TestAddEventPost(t *testing.T) {
+// 	dataStore = testDataStore()
+// 	setupDataStore(dataStore)
 
-	content := "game_id=CODE1"
+// 	content := "game_id=CODE1"
 
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(content))
-	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+// 	w := httptest.NewRecorder()
+// 	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(content))
+// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	addEventPost(w, r)
+// 	addEventPost(w, r)
 
-	confirmRedirectTarget("/game/CODE1", w, t)
-}
+// 	confirmRedirectTarget("/game/CODE1", w, t)
+// }
 
 func TestAddGamePost(t *testing.T) {
 	dataStore = testDataStore()

@@ -33,13 +33,6 @@ func main() {
 	addRoutes(e)
 
 	e.Start(addr)
-	// r := addHandlers()
-
-	// if err := http.ListenAndServe(addr, r); err != nil {
-	// 	logs.error("Server listening error: %+v", err)
-	// 	os.Exit(-5)
-	// }
-
 }
 
 func runningOnGCloud() bool {
