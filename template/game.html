@@ -1,9 +1,9 @@
 {{define "content"}}
 		<div>
-			<h1>{{.Game.ID}}</h1>
-			{{if .Game.GameDate }}
+			<h1>{{.Game.AwayTeam}} @ {{.Game.HomeTeam}}, {{.Game.GameDate}}</h1>
+			<!-- {{if .Game.GameDate }}
 			<div id="game_summary">{{.Game.AwayTeam}} @ {{.Game.HomeTeam}}, {{.Game.GameDate}}</div>
-			{{end}}
+			{{end}} -->
 			<div class="error">{{.Error}}</div>
 			<h3>Events</h3>
 			<table>

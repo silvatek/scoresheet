@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 	"html"
+	"io"
 
 	"os"
 
+	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
-	"text/template"
 
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 	"github.com/skip2/go-qrcode"
 )
 
@@ -27,82 +28,69 @@ type pageData struct {
 	History []string
 }
 
-func addHandlers() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/", homePage)
-	r.HandleFunc("/game/{id}", gamePage)
-	r.HandleFunc("/games", gameRedirect)
-	r.HandleFunc("/newEvent", newEventPage)
-	r.HandleFunc("/addEvent", addEventPost)
-	r.HandleFunc("/newGame", newGamePage)
-	r.HandleFunc("/addGame", addGamePost)
-	r.HandleFunc("/deleteEvent", deleteEventPage)
-	r.HandleFunc("/deleteGameEvent", deleteEventPost)
-	r.HandleFunc("/lockGame", lockGame)
-	r.HandleFunc("/unlockGame", unlockGame)
-	r.HandleFunc("/sharegame", shareGame)
-	r.HandleFunc("/qrcode", qrCodeGenerator)
-
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("template/static"))))
-
-	return r
+type Template struct {
+	//templates *template.Template
 }
 
-// show home/index page
-func homePage(w http.ResponseWriter, r *http.Request) {
-	logs.info("Received request: %s %s", r.Method, r.URL.Path)
+func addRoutes(c *echo.Echo) {
+	c.Renderer = &Template{}
+
+	c.Static("/static", "template/static")
+
+	c.GET("/", homePage)
+	c.GET("/games", gameRedirect)
+	c.GET("/game/:id", gamePage)
+	c.GET("/sharegame", shareGame)
+	c.GET("/qrcode", qrCodeGenerator)
+	c.GET("/newEvent", newEventPage)
+	c.POST("/addEvent", addEventPost)
+	c.GET("/newGame", newGamePage)
+	c.POST("/addGame", addGamePost)
+	c.GET("/deleteEvent", deleteEventPage)
+	c.POST("/deleteGameEvent", deleteEventPost)
+	c.GET("/lockGame", lockGamePage)
+	c.POST("/lockGame", lockGamePost)
+	c.GET("/unlockGame", unlockGamePage)
+	c.POST("/unlockGame", unlockGamePost)
+	c.GET("/error", errorPage)
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return showTemplatePage(name, data, w)
+}
+
+func showTemplatePage(templateName string, data any, w io.Writer) error {
+	t, err := template.ParseFiles("template/base.html", "template/"+templateName+".html")
+	if err != nil {
+		logs.error("Error parsing template: %+v", err)
+		os.Exit(-2)
+	}
+
+	if err := t.ExecuteTemplate(w, "base", data); err != nil {
+		//msg := http.StatusText(http.StatusInternalServerError)
+		logs.error("template.Execute: %v", err)
+		//http.Error(w, msg, http.StatusInternalServerError)
+	}
+
+	return err
+}
+
+func homePage(c echo.Context) error {
+	logs.info("Received request: %s", c.Path())
 
 	data := pageData{
 		Message: "Ice Hockey Scoresheet",
-		History: gameHistory(r),
+		History: gameHistory(c),
 	}
 
-	showTemplatePage("index", data, w)
+	return c.Render(http.StatusOK, "index", data)
 }
 
 // Redirect from query parameter URL to path parameter URL
-func gameRedirect(w http.ResponseWriter, r *http.Request) {
-	logs.info("Game redirect: %s", r.RequestURI)
-	gameId := strings.ToUpper(strings.TrimPrefix(r.RequestURI, "/games?game_id="))
-	http.Redirect(w, r, "/game/"+gameId, http.StatusSeeOther)
-}
-
-func lastPathElement(uri string) string {
-	// strip query parameters
-	queryStart := strings.Index(uri, "?")
-	if queryStart > -1 {
-		uri = uri[:queryStart]
-	}
-	// return everything after the last slash
-	lastSlash := strings.LastIndex(uri, "/")
-	if lastSlash == -1 {
-		return uri
-	}
-	return uri[lastSlash+1:]
-}
-
-func queryParam(uri string, param string) string {
-	queryStart := strings.Index(uri, "?")
-	if queryStart == -1 {
-		return ""
-	}
-	uri = uri[queryStart+1:]
-
-	paramStart := strings.Index(uri, param+"=")
-	if paramStart == -1 {
-		return ""
-	}
-	paramVal := uri[paramStart:]
-
-	valueStart := strings.Index(uri, "=")
-	paramVal = paramVal[valueStart+1:]
-
-	nextStart := strings.Index(paramVal, "&")
-	if nextStart > 0 {
-		paramVal = paramVal[0:nextStart]
-	}
-
-	return paramVal
+func gameRedirect(c echo.Context) error {
+	logs.info("Game redirect: %s", c.Path())
+	gameId := strings.ToUpper(c.QueryParam("game_id"))
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
 func errorMessage(errorCode string) string {
@@ -124,46 +112,49 @@ type GameRequestContext struct {
 	Request    *http.Request
 }
 
-func gameRequestContext(gameId string, r *http.Request) context.Context {
+func ctx(c echo.Context) context.Context {
+	gameId := c.Param("gameId")
+	if gameId == "" {
+		gameId = c.QueryParam("game_id")
+	}
+	if gameId == "" {
+		gameId = c.QueryParam("game")
+	}
 	values := GameRequestContext{
 		GameId:     gameId,
-		RemoteAddr: r.RemoteAddr,
+		RemoteAddr: c.RealIP(),
 	}
-	if r.Header["X-Forwarded-For"] != nil {
-		values.RemoteAddr = r.Header["X-Forwarded-For"][0]
-	}
-	return context.WithValue(r.Context(), GameIdKey, values)
+	return context.WithValue(c.Request().Context(), GameIdKey, values)
 }
 
-func gamePage(w http.ResponseWriter, r *http.Request) {
-	gameId := lastPathElement(r.URL.Path)
+func gamePage(c echo.Context) error {
+	gameId := c.Param("id")
 
-	ctx := gameRequestContext(gameId, r)
+	ctx := ctx(c)
 	logs.info1(ctx, "GET for game ID: %s", gameId)
 
 	var data pageData
 	data.Game = dataStore.getGame(ctx, gameId)
 
 	if data.Game.ID != gameId {
-		showErrorPage(fmt.Sprintf("Game not found: %s", gameId), w)
-		return
+		return showErrorPage(fmt.Sprintf("Game not found: %s", gameId), c)
 	}
 
 	SortEvents(&(data.Game))
 	data.Summary = summarise(data.Game)
 
-	errorCode := queryParam(r.RequestURI, "e")
+	errorCode := c.QueryParam("e")
 	if errorCode != "" {
 		data.Error = errorMessage(errorCode)
 	}
 
-	setGameHistoryCookie(gameId, w, r)
+	setGameHistoryCookie(gameId, c)
 
-	showTemplatePage("game", data, w)
+	return c.Render(http.StatusOK, "game", data)
 }
 
-func setGameHistoryCookie(gameId string, w http.ResponseWriter, r *http.Request) {
-	gameList := getExistingGameList(r)
+func setGameHistoryCookie(gameId string, c echo.Context) {
+	gameList := getExistingGameList(c)
 
 	gameList = gameId + " " + strings.Trim(strings.ReplaceAll(gameList, gameId, " "), " ")
 	logs.debug1(context.Background(), "New game history: %s", gameList)
@@ -176,12 +167,12 @@ func setGameHistoryCookie(gameId string, w http.ResponseWriter, r *http.Request)
 		SameSite: http.SameSiteStrictMode,
 	}
 
-	http.SetCookie(w, &cookie)
+	c.SetCookie(&cookie)
 }
 
-func getExistingGameList(r *http.Request) string {
+func getExistingGameList(c echo.Context) string {
 	var gameList string
-	current, err := r.Cookie("gameHistory")
+	current, err := c.Cookie("gameHistory")
 	if err != http.ErrNoCookie {
 		gameList = current.Value
 		logs.debug1(context.Background(), "Loaded game history: %s", gameList)
@@ -189,8 +180,8 @@ func getExistingGameList(r *http.Request) string {
 	return strings.Trim(gameList, " ")
 }
 
-func gameHistory(r *http.Request) []string {
-	cookieValue := getExistingGameList(r)
+func gameHistory(c echo.Context) []string {
+	cookieValue := getExistingGameList(c)
 	var games []string
 	if cookieValue != "" {
 		games = strings.Split(cookieValue, " ")
@@ -198,73 +189,58 @@ func gameHistory(r *http.Request) []string {
 	return games
 }
 
-func showErrorPage(error string, w http.ResponseWriter) {
+func errorPage(c echo.Context) error {
+	errorCode := c.QueryParam("e")
+	message := errorMessage(errorCode)
+	return showErrorPage(message, c)
+}
+
+func showErrorPage(error string, c echo.Context) error {
 	logs.info("Showing error page: %s", error)
 	var data pageData
 	data.Error = error
-	showTemplatePage("error", data, w)
+	return c.Render(http.StatusOK, "error", data)
 }
 
-func showTemplatePage(templateName string, data any, w http.ResponseWriter) {
-	t, err := template.ParseFiles("template/base.html", "template/"+templateName+".html")
-	if err != nil {
-		logs.error("Error parsing template: %+v", err)
-		os.Exit(-2)
-	}
+func newEventPage(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-	if err := t.ExecuteTemplate(w, "base", data); err != nil {
-		msg := http.StatusText(http.StatusInternalServerError)
-		logs.debug("template.Execute: %v", err)
-		http.Error(w, msg, http.StatusInternalServerError)
-	}
-}
-
-func newEventPage(w http.ResponseWriter, r *http.Request) {
-	gameId := gameIdParameter(r)
-
-	ctx := gameRequestContext(gameId, r)
+	ctx := context.Background() //gameRequestContext(gameId, r)
 	logs.debug1(ctx, "Showing new event page for game %s", gameId)
 
 	game := dataStore.getGame(ctx, gameId)
 
 	if game.ID != gameId {
-		showErrorPage(fmt.Sprintf("Game not found when adding event: %s", gameId), w)
-		return
+		return c.Redirect(http.StatusNotFound, fmt.Sprintf("Game not found when adding event: %s", gameId))
 	}
 
 	data := pageData{
 		Game: game,
 	}
 
-	showTemplatePage("newevent", data, w)
+	return c.Render(http.StatusOK, "newevent", data)
 }
 
-func newGamePage(w http.ResponseWriter, r *http.Request) {
-	showTemplatePage("newgame", "", w)
-}
+func addEventPost(c echo.Context) error {
+	gameId := c.FormValue("game_id")
+	playerId, _ := strconv.Atoi(c.FormValue("player"))
 
-func addEventPost(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-
-	gameId := r.Form.Get("game_id")
-	playerId, _ := strconv.Atoi(r.Form.Get("player"))
-
-	ctx := gameRequestContext(gameId, r)
+	ctx := ctx(c)
 	logs.debug1(ctx, "Received new event data, Game ID = %s, Player = %d, Event = %s",
-		gameId, playerId, r.Form.Get("event_type"))
+		gameId, playerId, c.FormValue("event_type"))
 
 	game := dataStore.getGame(ctx, gameId)
 
-	period, _ := strconv.Atoi(r.Form.Get("period"))
-	clockTime := r.Form.Get("minutes") + ":" + r.Form.Get("seconds")
-	homeAway := r.Form.Get("home_away")
-	category := r.Form.Get("category")
+	period, _ := strconv.Atoi(c.FormValue("period"))
+	clockTime := c.FormValue("minutes") + ":" + c.FormValue("seconds")
+	homeAway := c.FormValue("home_away")
+	category := c.FormValue("category")
 
-	assist1, _ := strconv.Atoi(r.Form.Get("assist1"))
-	assist2, _ := strconv.Atoi(r.Form.Get("assist2"))
-	minutes, _ := strconv.Atoi(r.Form.Get("minutes"))
+	assist1, _ := strconv.Atoi(c.FormValue("assist1"))
+	assist2, _ := strconv.Atoi(c.FormValue("assist2"))
+	minutes, _ := strconv.Atoi(c.FormValue("minutes"))
 
-	if r.Form.Get("event_type") == "Penalty" {
+	if c.FormValue("event_type") == "Penalty" {
 		AddPenalty(&game, period, EventTime(clockTime), homeAway, playerId, minutes, category)
 	} else {
 		AddGoal(&game, period, EventTime(clockTime), homeAway, playerId, assist1, assist2, category)
@@ -272,37 +248,38 @@ func addEventPost(w http.ResponseWriter, r *http.Request) {
 
 	dataStore.putGame(ctx, gameId, game)
 
-	http.Redirect(w, r, "/game/"+gameId, http.StatusSeeOther)
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
-func addGamePost(w http.ResponseWriter, r *http.Request) {
-	logs.debug("Received new game data")
+func newGamePage(c echo.Context) error {
+	return c.Render(http.StatusOK, "newgame", "")
+}
 
-	r.ParseForm()
+func addGamePost(c echo.Context) error {
+	logs.debug("Received new game data")
 
 	var game Game
 
-	game.HomeTeam = r.Form.Get("home_team")
-	game.AwayTeam = r.Form.Get("away_team")
-	game.GameDate = r.Form.Get("game_date")
+	game.HomeTeam = c.FormValue("home_team")
+	game.AwayTeam = c.FormValue("away_team")
+	game.GameDate = c.FormValue("game_date")
 	game.Title = game.AwayTeam + " @ " + game.HomeTeam + " on " + game.GameDate
 
 	gameId := dataStore.addGame(context.Background(), &game)
 
-	http.Redirect(w, r, "/game/"+gameId, http.StatusSeeOther)
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
-func deleteEventPage(w http.ResponseWriter, r *http.Request) {
-	gameId := gameIdParameter(r)
+func deleteEventPage(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-	ctx := gameRequestContext(gameId, r)
+	ctx := ctx(c)
 	logs.debug1(ctx, "Showing delete event page for game %s", gameId)
 
 	game := dataStore.getGame(ctx, gameId)
 
 	if game.ID != gameId {
-		showErrorPage(fmt.Sprintf("Game not found when deleting event: %s", gameId), w)
-		return
+		return c.Redirect(http.StatusNotFound, fmt.Sprintf("Game not found when deleting event: %s", gameId))
 	}
 
 	SortEvents(&game)
@@ -311,27 +288,24 @@ func deleteEventPage(w http.ResponseWriter, r *http.Request) {
 		Game: game,
 	}
 
-	showTemplatePage("deleteevent", data, w)
+	return c.Render(http.StatusOK, "deleteevent", data)
 }
 
-func deleteEventPost(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+func deleteEventPost(c echo.Context) error {
 
-	gameId := r.Form.Get("game_id")
-	ctx := gameRequestContext(gameId, r)
+	gameId := c.FormValue("game_id")
+	ctx := ctx(c)
 
-	requestedEvent := r.Form.Get("event_summary")
+	requestedEvent := c.FormValue("event_summary")
 	logs.debug("Received delete event request for %s, %s", gameId, requestedEvent)
 
 	game := dataStore.getGame(ctx, gameId)
 
 	if game.ID != gameId {
-		showErrorPage(fmt.Sprintf("Game not found when deleting event: %s", gameId), w)
-		return
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Game not found when deleting event: %s", gameId))
 	}
 	if game.LockedWith != "" {
-		showErrorPage(fmt.Sprintf("Attempting to delete event from locked game: %s", gameId), w)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Attempting to delete event from locked game: %s", gameId))
 	}
 
 	for n, event := range game.Events {
@@ -363,76 +337,68 @@ func deleteEventPost(w http.ResponseWriter, r *http.Request) {
 
 	dataStore.putGame(ctx, gameId, game)
 
-	http.Redirect(w, r, "/game/"+gameId, http.StatusSeeOther)
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
-func lockGame(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		r.ParseForm()
-		gameId := r.Form.Get("game_id")
+func lockGamePage(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-		ctx := gameRequestContext(gameId, r)
+	ctx := ctx(c)
 
-		game := dataStore.getGame(ctx, gameId)
-
-		userKey := r.Form.Get("unlock_key")
-
-		if game.LockedWith == "" {
-			game.LockedWith = userKey
-			dataStore.putGame(ctx, gameId, game)
-		}
-
-		http.Redirect(w, r, "/game/"+gameId, http.StatusSeeOther)
-	} else {
-		gameId := gameIdParameter(r)
-
-		ctx := gameRequestContext(gameId, r)
-
-		game := dataStore.getGame(ctx, gameId)
-		data := pageData{
-			Game: game,
-		}
-		showTemplatePage("lockgame", data, w)
+	game := dataStore.getGame(ctx, gameId)
+	data := pageData{
+		Game: game,
 	}
+
+	return c.Render(http.StatusOK, "lockgame", data)
 }
 
-func unlockGame(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		r.ParseForm()
-		gameId := r.Form.Get("game_id")
+func lockGamePost(c echo.Context) error {
+	gameId := c.FormValue("game_id")
 
-		ctx := gameRequestContext(gameId, r)
+	ctx := ctx(c)
 
-		game := dataStore.getGame(ctx, gameId)
+	game := dataStore.getGame(ctx, gameId)
 
-		userKey := r.Form.Get("unlock_key")
+	userKey := c.FormValue("unlock_key")
 
-		var errorSuffix string
-
-		if game.LockedWith == userKey {
-			game.LockedWith = ""
-			dataStore.putGame(ctx, gameId, game)
-		} else {
-			errorSuffix = "?e=8001"
-		}
-
-		http.Redirect(w, r, "/game/"+gameId+errorSuffix, http.StatusSeeOther)
-	} else {
-		gameId := gameIdParameter(r)
-
-		ctx := gameRequestContext(gameId, r)
-
-		game := dataStore.getGame(ctx, gameId)
-		data := pageData{
-			Game: game,
-		}
-		showTemplatePage("unlockgame", data, w)
+	if game.LockedWith == "" {
+		game.LockedWith = userKey
+		dataStore.putGame(ctx, gameId, game)
 	}
+
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
 
-func gameIdParameter(r *http.Request) string {
-	params := strings.Split(r.RequestURI, "?")[1]
-	return strings.ToUpper(strings.TrimPrefix(params, "game="))
+func unlockGamePage(c echo.Context) error {
+	gameId := c.QueryParam("game")
+
+	game := dataStore.getGame(ctx(c), gameId)
+	data := pageData{
+		Game: game,
+	}
+	return c.Render(http.StatusOK, "unlockgame", data)
+}
+
+func unlockGamePost(c echo.Context) error {
+	gameId := c.FormValue("game_id")
+
+	ctx := ctx(c)
+
+	game := dataStore.getGame(ctx, gameId)
+
+	userKey := c.FormValue("unlock_key")
+
+	var errorSuffix string
+
+	if game.LockedWith == userKey {
+		game.LockedWith = ""
+		dataStore.putGame(ctx, gameId, game)
+	} else {
+		errorSuffix = "?e=8001"
+	}
+
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId+errorSuffix)
 }
 
 func gameUrl(gameId string, r *http.Request) string {
@@ -446,33 +412,28 @@ func gameUrl(gameId string, r *http.Request) string {
 	return scheme + "://" + r.Host + "/game/" + gameId
 }
 
-func shareGame(w http.ResponseWriter, r *http.Request) {
-	gameId := gameIdParameter(r)
+func shareGame(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-	gameUrl := gameUrl(gameId, r)
+	gameUrl := gameUrl(gameId, c.Request())
 
 	var data pageData
 	data.GameID = gameId
 	data.GameURL = gameUrl
 	data.Encoded = html.EscapeString(gameUrl)
 
-	showTemplatePage("sharegame", data, w)
+	return c.Render(http.StatusOK, "sharegame", data)
 }
 
-func qrCodeGenerator(w http.ResponseWriter, r *http.Request) {
-	gameId := gameIdParameter(r)
+func qrCodeGenerator(c echo.Context) error {
+	gameId := c.QueryParam("game")
 
-	gameUrl := gameUrl(gameId, r)
+	gameUrl := gameUrl(gameId, c.Request())
 
-	tempFileName := os.Getenv("TMPDIR") + "/" + gameId + ".png"
-
-	qrcode.WriteFile(gameUrl, qrcode.High, 320, tempFileName)
-	defer os.Remove(tempFileName)
-
-	content, _ := os.ReadFile(tempFileName)
-
-	headers := w.Header()
+	headers := c.Response().Header()
 	headers.Add("Content-Type", "image/png")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(content))
+	c.Response().WriteHeader(http.StatusOK)
+
+	q, _ := qrcode.New(gameUrl, qrcode.High)
+	return q.Write(320, c.Response())
 }
