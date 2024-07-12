@@ -3,37 +3,17 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
-
-	"github.com/PuerkitoBio/goquery"
 )
 
-// func TestHomePage(t *testing.T) {
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodGet, "/", nil)
+func TestHomePage(t *testing.T) {
+	wt := webTest(t)
+	defer wt.showBodyOnFail()
 
-// 	homePage(w, r)
+	homePage(wt.ec)
 
-// 	confirmSuccessResponse(w, t)
-
-// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
-
-// 	confirmBodyIncludes("#intro", "Use this site to record details of UK recreational ice hockey games.",
-// 		"Home page does not contain standard intro", doc, t)
-// }
-
-func confirmSuccessResponse(w *httptest.ResponseRecorder, t *testing.T) {
-	if w.Code >= 400 {
-		t.Errorf("got HTTP status code %d, expected 2xx or 3xx", w.Code)
-	}
-}
-
-func confirmBodyIncludes(query string, expected string, failMessage string, doc *goquery.Document, t *testing.T) {
-	text := doc.Find(query).Text()
-	if !strings.Contains(text, expected) {
-		t.Errorf("%s => %s", failMessage, text)
-	}
+	wt.confirmSuccessResponse()
+	wt.confirmBodyIncludes("#intro", "Use this site to record details of UK recreational ice hockey games.")
 }
 
 // func TestGamePage(t *testing.T) {
