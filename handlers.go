@@ -137,7 +137,7 @@ func gamePage(c echo.Context) error {
 	data.Game = dataStore.getGame(ctx, gameId)
 
 	if data.Game.ID != gameId {
-		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Game not found: %s", gameId))
+		return showErrorPage(fmt.Sprintf("Game not found: %s", gameId), c)
 	}
 
 	SortEvents(&(data.Game))
