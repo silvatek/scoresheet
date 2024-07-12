@@ -52,6 +52,7 @@ func addRoutes(c *echo.Echo) {
 	c.POST("/lockGame", lockGamePost)
 	c.GET("/unlockGame", unlockGamePage)
 	c.POST("/unlockGame", unlockGamePost)
+	c.GET("/error", errorPage)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -79,6 +80,7 @@ func homePage(c echo.Context) error {
 
 	data := pageData{
 		Message: "Ice Hockey Scoresheet",
+		History: gameHistory(c),
 	}
 
 	return c.Render(http.StatusOK, "index", data)
@@ -141,18 +143,18 @@ func gamePage(c echo.Context) error {
 	SortEvents(&(data.Game))
 	data.Summary = summarise(data.Game)
 
-	// errorCode := queryParam(r.RequestURI, "e")
-	// if errorCode != "" {
-	// 	data.Error = errorMessage(errorCode)
-	// }
+	errorCode := c.QueryParam("e")
+	if errorCode != "" {
+		data.Error = errorMessage(errorCode)
+	}
 
-	// setGameHistoryCookie(gameId, w, r)
+	setGameHistoryCookie(gameId, c)
 
 	return c.Render(http.StatusOK, "game", data)
 }
 
-func setGameHistoryCookie(gameId string, w http.ResponseWriter, r *http.Request) {
-	gameList := getExistingGameList(r)
+func setGameHistoryCookie(gameId string, c echo.Context) {
+	gameList := getExistingGameList(c)
 
 	gameList = gameId + " " + strings.Trim(strings.ReplaceAll(gameList, gameId, " "), " ")
 	logs.debug1(context.Background(), "New game history: %s", gameList)
@@ -165,12 +167,12 @@ func setGameHistoryCookie(gameId string, w http.ResponseWriter, r *http.Request)
 		SameSite: http.SameSiteStrictMode,
 	}
 
-	http.SetCookie(w, &cookie)
+	c.SetCookie(&cookie)
 }
 
-func getExistingGameList(r *http.Request) string {
+func getExistingGameList(c echo.Context) string {
 	var gameList string
-	current, err := r.Cookie("gameHistory")
+	current, err := c.Cookie("gameHistory")
 	if err != http.ErrNoCookie {
 		gameList = current.Value
 		logs.debug1(context.Background(), "Loaded game history: %s", gameList)
@@ -178,8 +180,8 @@ func getExistingGameList(r *http.Request) string {
 	return strings.Trim(gameList, " ")
 }
 
-func gameHistory(r *http.Request) []string {
-	cookieValue := getExistingGameList(r)
+func gameHistory(c echo.Context) []string {
+	cookieValue := getExistingGameList(c)
 	var games []string
 	if cookieValue != "" {
 		games = strings.Split(cookieValue, " ")
@@ -187,11 +189,17 @@ func gameHistory(r *http.Request) []string {
 	return games
 }
 
-func showErrorPage(error string, w http.ResponseWriter) {
+func errorPage(c echo.Context) error {
+	errorCode := c.QueryParam("e")
+	message := errorMessage(errorCode)
+	return showErrorPage(message, c)
+}
+
+func showErrorPage(error string, c echo.Context) error {
 	logs.info("Showing error page: %s", error)
 	var data pageData
 	data.Error = error
-	showTemplatePage("error", data, w)
+	return c.Render(http.StatusOK, "error", data)
 }
 
 func newEventPage(c echo.Context) error {
