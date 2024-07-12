@@ -1,10 +1,20 @@
 package main
 
 import (
-	"net/http"
-	"net/http/httptest"
+	"context"
 	"testing"
+
+	"github.com/labstack/echo/v4"
 )
+
+func TestAddRoutes(t *testing.T) {
+	e := echo.New()
+	addRoutes(e)
+
+	if len(e.Routes()) != 17 {
+		t.Errorf("Unexpected number of routes: %d", len(e.Routes()))
+	}
+}
 
 func TestHomePage(t *testing.T) {
 	wt := webTest(t)
@@ -16,35 +26,31 @@ func TestHomePage(t *testing.T) {
 	wt.confirmBodyIncludes("#intro", "Use this site to record details of UK recreational ice hockey games.")
 }
 
-// func TestGamePage(t *testing.T) {
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodGet, "/game/CODE1", nil)
+func TestGamePage(t *testing.T) {
+	wt := webTest(t)
+	wt.setParam("id", "CODE1")
+	defer wt.showBodyOnFail()
 
-// 	dataStore = testDataStore()
-// 	addTestGames(dataStore)
+	dataStore = testDataStore()
+	addTestGames(dataStore)
 
-// 	gamePage(w, r)
+	gamePage(wt.ec)
 
-// 	confirmSuccessResponse(w, t)
+	wt.confirmSuccessResponse()
 
-// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
+	wt.confirmBodyIncludes("h1", "Blues @ Reds, 2024-05-27")
+	wt.confirmBodyIncludes("td", "14:25 (25:35)")
+}
 
-// 	confirmBodyIncludes("#game_summary", "Blues @ Reds, 2024-05-27", "Home page does not contain expected heading", doc, t)
-// 	confirmBodyIncludes("td", "14:25 (25:35)", "Home page does not contain expected penalty", doc, t)
-// }
+func TestNewGamePage(t *testing.T) {
+	wt := webTest(t)
+	defer wt.showBodyOnFail()
 
-// func TestNewGamePage(t *testing.T) {
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodGet, "/", nil)
+	newGamePage(wt.ec)
 
-// 	newGamePage(w, r)
-
-// 	confirmSuccessResponse(w, t)
-
-// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
-
-// 	confirmBodyIncludes("h1", "New Game", "New game page does not contain expected heading", doc, t)
-// }
+	wt.confirmSuccessResponse()
+	wt.confirmBodyIncludes("h1", "New Game")
+}
 
 func TestSetupDataStore(t *testing.T) {
 	dataStore := testDataStore()
@@ -60,171 +66,133 @@ func TestSetupDataStore(t *testing.T) {
 	}
 }
 
-// func TestAddHandlers(t *testing.T) {
-// 	addHandlers()
-// }
+func TestGameRedirect(t *testing.T) {
+	wt := webTest(t)
+	wt.setQuery("game_id", "xyz")
 
-// func TestGameRedirect(t *testing.T) {
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodGet, "/games?game_id=xyz", nil)
+	gameRedirect(wt.ec)
 
-// 	gameRedirect(w, r)
+	wt.confirmRedirect("/game/XYZ")
+}
 
-// 	if w.Result().StatusCode != http.StatusSeeOther {
-// 		t.Errorf("Unexpected response code, was not redirect: %d", w.Result().StatusCode)
-// 	}
-// }
+func TestNewEventPage(t *testing.T) {
+	dataStore = testDataStore()
+	setupDataStore(dataStore)
 
-// func TestNewEventPage(t *testing.T) {
-// 	dataStore = testDataStore()
-// 	setupDataStore(dataStore)
+	wt := webTest(t)
+	wt.setQuery("game", "CODE1")
 
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodGet, "/newEvent?game=CODE1", nil)
+	newEventPage(wt.ec)
 
-// 	newEventPage(w, r)
+	wt.confirmSuccessResponse()
+	wt.confirmBodyIncludes("h1", "New event for game CODE1")
+}
 
-// 	confirmSuccessResponse(w, t)
+func TestAddEventPost(t *testing.T) {
+	dataStore = testDataStore()
+	setupDataStore(dataStore)
 
-// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
+	wt := webTest(t)
+	wt.post("game_id=CODE1")
 
-// 	confirmBodyIncludes("h1", "New event for game CODE1", "New event page does not contain expected heading", doc, t)
-// }
+	addEventPost(wt.ec)
 
-func confirmRedirectTarget(expected string, w *httptest.ResponseRecorder, t *testing.T) {
-	if w.Result().StatusCode != http.StatusSeeOther {
-		t.Errorf("Unexpected response code, was not redirect: %d", w.Result().StatusCode)
+	wt.confirmRedirect("/game/CODE1")
+}
+
+func TestAddGamePost(t *testing.T) {
+	dataStore = testDataStore()
+
+	if !dataStore.isEmpty() {
+		t.Error("Datastore should be empty before test")
 	}
-	if w.Result().Header.Get("Location") != expected {
-		t.Errorf("Unexpected redirect target: %s", w.Result().Header.Get("Location"))
+
+	wt := webTest(t)
+	wt.post("home_team='ABC'&away_test='XYZ'")
+
+	addGamePost(wt.ec)
+
+	if dataStore.isEmpty() {
+		t.Error("Datastore should not be empty after test")
 	}
 }
 
-// func TestAddEventPost(t *testing.T) {
-// 	dataStore = testDataStore()
-// 	setupDataStore(dataStore)
+func TestLockGamePage(t *testing.T) {
+	dataStore = testDataStore()
+	setupDataStore(dataStore)
 
-// 	content := "game_id=CODE1"
+	wt := webTest(t)
+	wt.setQuery("game", "CODE1")
+	wt.showBodyOnFail()
 
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(content))
-// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	lockGamePage(wt.ec)
 
-// 	addEventPost(w, r)
+	wt.confirmSuccessResponse()
+	wt.confirmBodyIncludes("h1", "Lock Game CODE1")
+}
 
-// 	confirmRedirectTarget("/game/CODE1", w, t)
-// }
+func TestLockGamePost(t *testing.T) {
+	dataStore = testDataStore()
+	setupDataStore(dataStore)
 
-// func TestAddGamePost(t *testing.T) {
-// 	dataStore = testDataStore()
+	wt := webTest(t)
+	wt.post("game_id=CODE1&unlock_key=testing")
 
-// 	if !dataStore.isEmpty() {
-// 		t.Error("Datastore should be empty before test")
-// 	}
+	lockGamePost(wt.ec)
 
-// 	content := "home_team='ABC'&away_test='XYZ'"
+	wt.confirmRedirect("/game/CODE1")
+}
 
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(content))
-// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+func TestUnlockGamePage(t *testing.T) {
+	dataStore = testDataStore()
+	setupDataStore(dataStore)
 
-// 	addGamePost(w, r)
+	wt := webTest(t)
+	wt.setQuery("game", "CODE1")
+	wt.showBodyOnFail()
 
-// 	if dataStore.isEmpty() {
-// 		t.Error("Datastore should not be empty after test")
-// 	}
-// }
+	unlockGamePage(wt.ec)
 
-// func TestLockGameGet(t *testing.T) {
-// 	dataStore = testDataStore()
-// 	setupDataStore(dataStore)
+	wt.confirmSuccessResponse()
 
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodGet, "/lockGame?game=CODE1", nil)
+	wt.confirmBodyIncludes("h1", "Unlock Game CODE1")
+}
 
-// 	lockGame(w, r)
+func TestUnlockGamePost(t *testing.T) {
+	dataStore = testDataStore()
+	game := testGame2()
+	dataStore.putGame(context.Background(), game.ID, game)
 
-// 	confirmSuccessResponse(w, t)
+	wt := webTest(t)
+	wt.post("game_id=CODE2&unlock_key=secret123")
 
-// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
+	unlockGamePost(wt.ec)
 
-// 	confirmBodyIncludes("h1", "Lock Game CODE1", "New event page does not contain expected heading", doc, t)
-// }
+	wt.confirmRedirect("/game/CODE2")
+}
 
-// func TestLockGamePost(t *testing.T) {
-// 	dataStore = testDataStore()
-// 	setupDataStore(dataStore)
+func TestDeleteEventPage(t *testing.T) {
+	dataStore = testDataStore()
+	setupDataStore(dataStore)
 
-// 	content := "game_id=CODE1&unlock_key=testing"
+	wt := webTest(t)
+	wt.setQuery("game", "CODE1")
+	defer wt.showBodyOnFail()
 
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodPost, "/lockGame", strings.NewReader(content))
-// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	deleteEventPage(wt.ec)
 
-// 	lockGame(w, r)
+	wt.confirmSuccessResponse()
+	wt.confirmBodyIncludes("h1", "Delete event for game CODE1")
+}
 
-// 	confirmRedirectTarget("/game/CODE1", w, t)
-// }
+func TestDeleteEventPost(t *testing.T) {
+	dataStore = testDataStore()
+	setupDataStore(dataStore)
 
-// func TestUnlockGameGet(t *testing.T) {
-// 	dataStore = testDataStore()
-// 	setupDataStore(dataStore)
+	wt := webTest(t)
+	wt.post("game_id=CODE1&event_summary=01:30 Home Goal")
 
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodGet, "/unlockGame?game=CODE1", nil)
+	deleteEventPost(wt.ec)
 
-// 	unlockGame(w, r)
-
-// 	confirmSuccessResponse(w, t)
-
-// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
-
-// 	confirmBodyIncludes("h1", "Unlock Game CODE1", "New event page does not contain expected heading", doc, t)
-// }
-
-// func TestUnlockGamePost(t *testing.T) {
-// 	dataStore = testDataStore()
-// 	game := testGame2()
-// 	dataStore.putGame(context.Background(), game.ID, game)
-
-// 	content := "game_id=CODE2&unlock_key=secret123"
-
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodPost, "/unlockGame", strings.NewReader(content))
-// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-// 	unlockGame(w, r)
-
-// 	confirmRedirectTarget("/game/CODE2", w, t)
-// }
-
-// func TestDeleteEventPage(t *testing.T) {
-// 	dataStore = testDataStore()
-// 	setupDataStore(dataStore)
-
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodGet, "/deleteEvent?game=CODE1", nil)
-
-// 	deleteEventPage(w, r)
-
-// 	confirmSuccessResponse(w, t)
-
-// 	doc, _ := goquery.NewDocumentFromReader(w.Body)
-
-// 	confirmBodyIncludes("h1", "Delete event for game CODE1", "New event page does not contain expected heading", doc, t)
-// }
-
-// func TestDeleteEventPost(t *testing.T) {
-// 	dataStore = testDataStore()
-// 	setupDataStore(dataStore)
-
-// 	content := "game_id=CODE1&event_summary=01:30 Home Goal"
-
-// 	w := httptest.NewRecorder()
-// 	r := httptest.NewRequest(http.MethodPost, "/deleteEvent", strings.NewReader(content))
-// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-// 	deleteEventPost(w, r)
-
-// 	confirmRedirectTarget("/game/CODE1", w, t)
-// }
+	wt.confirmRedirect("/game/CODE1")
+}

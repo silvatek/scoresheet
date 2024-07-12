@@ -20,18 +20,19 @@ The templates for html pages are in `templates` and static content (stylesheet, 
 ## Commands
 Run tests and show coverage...
 
-```go test -coverprofile=cover.out```
+```go test -coverprofile cover.out```
 
-```go tool cover -html=cover.out```
+```go tool cover -html cover.out```
 
 ## Tracking
 
 ### To-Do
 
-* Store game history in a cookie and allow user to go back to recent ones
 * Cache parsed templates
 
 ### Done
+* Migrate to echo web framework
+* Store game history in a cookie and allow user to go back to recent ones
 * Write a doc into the Games collection from the fire page
 * Write test games into firestore if the collection is empty
 * Read the game from firestore and show on the page

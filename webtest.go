@@ -33,6 +33,21 @@ func webTest(t *testing.T) *WebTest {
 	return &wt
 }
 
+func (wt *WebTest) setParam(name string, value string) {
+	wt.ec.SetParamNames(name)
+	wt.ec.SetParamValues(value)
+}
+
+func (wt *WebTest) setQuery(name string, value string) {
+	wt.ec.QueryParams().Add(name, value)
+}
+
+func (wt *WebTest) post(content string) {
+	wt.req = httptest.NewRequest(http.MethodPost, "/", strings.NewReader(content))
+	wt.req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	wt.ec = wt.e.NewContext(wt.req, wt.resp)
+}
+
 func (wt *WebTest) confirmSuccessResponse() {
 	if wt.resp.Code >= 400 {
 		wt.failed = true
@@ -48,6 +63,17 @@ func (wt *WebTest) confirmBodyIncludes(query string, expected string) {
 	if !strings.Contains(text, expected) {
 		wt.failed = true
 		wt.testContext.Errorf("Did not find `%s` in %s", expected, query)
+	}
+}
+
+func (wt *WebTest) confirmRedirect(target string) {
+	if wt.resp.Result().StatusCode != http.StatusSeeOther {
+		wt.failed = true
+		wt.testContext.Errorf("Did not get redirect status code %d", wt.resp.Result().StatusCode)
+	}
+	if wt.resp.Header().Get("Location") != target {
+		wt.failed = true
+		wt.testContext.Errorf("Unexpected redirect target: `%s`", wt.resp.Header().Get("Location"))
 	}
 }
 
