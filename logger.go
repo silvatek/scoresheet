@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"time"
 
 	"cloud.google.com/go/logging"
 )
@@ -16,17 +19,34 @@ type Logger struct {
 	project string
 	client  *logging.Client
 	logs    *logging.Logger
+	encoder *json.Encoder
+}
+
+type GcpLogEntry struct {
+	Severity    string            `json:"severity"`
+	Timestamp   time.Time         `json:"timestamp"`
+	Message     interface{}       `json:"message,omitempty"`
+	TextPayload interface{}       `json:"textPayload,omitempty"`
+	Labels      map[string]string `json:"logging.googleapis.com/labels,omitempty"`
+	TraceID     string            `json:"logging.googleapis.com/trace,omitempty"`
+	SpanID      string            `json:"logging.googleapis.com/spanId,omitempty"`
+	HttpRequest HttpRequestLog    `json:"httpRequest,omitempty"`
+}
+
+type HttpRequestLog struct {
+	RequestMethod string `json:"requestMethod,omitempty"`
+	RequestUrl    string `json:"requestUrl,omitempty"`
 }
 
 func (logger *Logger) init() {
 	if runningOnGCloud() {
 		logger.mode = GCLOUD_LOGS
 		logger.project = "icehockeyscoresheet"
-		client, err := logging.NewClient(context.Background(), logger.project)
-		if err == nil {
-			logger.client = client
-			logger.logs = client.Logger("scoresheet")
-		}
+		// client, err := logging.NewClient(context.Background(), logger.project)
+		// if err == nil {
+		// 	logger.client = client
+		// 	logger.logs = client.Logger("scoresheet")
+		// }
 	} else {
 		logger.mode = LOCAL_LOGS
 	}
@@ -72,15 +92,31 @@ func (logger *Logger) error1(ctx context.Context, template string, args ...any) 
 }
 
 func (logger *Logger) gCloudLog(ctx context.Context, severity logging.Severity, template string, args ...any) {
-	labels := make(map[string]string)
-	values := ctx.Value(GameIdKey)
-	if values != nil {
-		labels["gameId"] = values.(GameRequestContext).GameId
-		labels["remoteAddr"] = values.(GameRequestContext).RemoteAddr
+	// labels := make(map[string]string)
+	// values := ctx.Value(GameIdKey)
+	// if values != nil {
+	// 	labels["gameId"] = values.(GameRequestContext).GameId
+	// 	labels["remoteAddr"] = values.(GameRequestContext).RemoteAddr
+	// }
+	// logger.logs.Log(logging.Entry{
+	// 	Payload:  fmt.Sprintf(template, args...),
+	// 	Severity: severity,
+	// 	Labels:   labels,
+	// })
+
+	if logger.encoder == nil {
+		logger.encoder = json.NewEncoder(os.Stderr)
 	}
-	logger.logs.Log(logging.Entry{
-		Payload:  fmt.Sprintf(template, args...),
-		Severity: severity,
-		Labels:   labels,
-	})
+
+	entry := GcpLogEntry{
+		Severity:  severity.String(),
+		Timestamp: time.Now(),
+		Message:   fmt.Sprintf(template, args...),
+	}
+
+	entry.Labels = map[string]string{
+		"appname": logger.project,
+	}
+
+	logger.encoder.Encode(entry)
 }
