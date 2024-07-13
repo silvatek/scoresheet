@@ -23,7 +23,7 @@ func TestHomePage(t *testing.T) {
 	homePage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmBodyIncludes("#intro", "Use this site to record details of UK recreational ice hockey games.")
+	wt.confirmHtmlIncludes("#intro", "Use this site to record details of UK recreational ice hockey games.")
 }
 
 func TestGamePage(t *testing.T) {
@@ -38,8 +38,8 @@ func TestGamePage(t *testing.T) {
 
 	wt.confirmSuccessResponse()
 
-	wt.confirmBodyIncludes("h1", "Blues @ Reds, 2024-05-27")
-	wt.confirmBodyIncludes("td", "14:25 (25:35)")
+	wt.confirmHtmlIncludes("h1", "Blues @ Reds, 2024-05-27")
+	wt.confirmHtmlIncludes("td", "14:25 (25:35)")
 }
 
 func TestNewGamePage(t *testing.T) {
@@ -49,7 +49,7 @@ func TestNewGamePage(t *testing.T) {
 	newGamePage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmBodyIncludes("h1", "New Game")
+	wt.confirmHtmlIncludes("h1", "New Game")
 }
 
 func TestSetupDataStore(t *testing.T) {
@@ -85,7 +85,7 @@ func TestNewEventPage(t *testing.T) {
 	newEventPage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmBodyIncludes("h1", "New event for game CODE1")
+	wt.confirmHtmlIncludes("h1", "New event for game CODE1")
 }
 
 func TestAddEventPost(t *testing.T) {
@@ -128,7 +128,7 @@ func TestLockGamePage(t *testing.T) {
 	lockGamePage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmBodyIncludes("h1", "Lock Game CODE1")
+	wt.confirmHtmlIncludes("h1", "Lock Game CODE1")
 }
 
 func TestLockGamePost(t *testing.T) {
@@ -155,7 +155,7 @@ func TestUnlockGamePage(t *testing.T) {
 
 	wt.confirmSuccessResponse()
 
-	wt.confirmBodyIncludes("h1", "Unlock Game CODE1")
+	wt.confirmHtmlIncludes("h1", "Unlock Game CODE1")
 }
 
 func TestUnlockGamePost(t *testing.T) {
@@ -182,7 +182,7 @@ func TestDeleteEventPage(t *testing.T) {
 	deleteEventPage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmBodyIncludes("h1", "Delete event for game CODE1")
+	wt.confirmHtmlIncludes("h1", "Delete event for game CODE1")
 }
 
 func TestDeleteEventPost(t *testing.T) {
@@ -195,4 +195,15 @@ func TestDeleteEventPost(t *testing.T) {
 	deleteEventPost(wt.ec)
 
 	wt.confirmRedirect("/game/CODE1")
+}
+
+func TestShareGamePage(t *testing.T) {
+	wt := webTest(t)
+	wt.setQuery("game", "SHARE-CODE")
+	defer wt.showBodyOnFail()
+
+	shareGame(wt.ec)
+
+	wt.confirmSuccessResponse()
+	wt.confirmHtmlIncludes("#gameurl", "SHARE-CODE")
 }

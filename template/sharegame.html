@@ -3,10 +3,10 @@
 			<h1><img src="/static/logo.svg" class="h1image"/>Share game {{.GameID}}</h1>
 		</div>
 		<div>
-			This game can be accessed at
+			<span id="prompt">This game can be accessed at</span>
 			<br>
 			<a href="{{.GameURL}}">
-				{{.Encoded}}
+				<span id="gameurl">{{.Encoded}}</span>
 			</a>
 		</div>
 		<img src="/qrcode?game={{.GameID}}">

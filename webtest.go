@@ -55,7 +55,7 @@ func (wt *WebTest) confirmSuccessResponse() {
 	}
 }
 
-func (wt *WebTest) confirmBodyIncludes(query string, expected string) {
+func (wt *WebTest) confirmHtmlIncludes(query string, expected string) {
 	if wt.doc == nil {
 		wt.doc, _ = goquery.NewDocumentFromReader(bytes.NewReader(wt.resp.Body.Bytes()))
 	}
@@ -79,6 +79,6 @@ func (wt *WebTest) confirmRedirect(target string) {
 
 func (wt *WebTest) showBodyOnFail() {
 	if wt.failed {
-		wt.testContext.Error(string(wt.resp.Body.Bytes()[:]))
+		wt.testContext.Error("Response body:- " + string(wt.resp.Body.Bytes()[:]))
 	}
 }
