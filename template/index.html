@@ -59,7 +59,7 @@
 				{{range $game := .History}} 
 				{{if $game}}
 					<li>
-						<a href="/game/{{$game}}">{{$game}}</a>
+						<a href="/game/{{$game.ID}}">{{$game.Title}}</a>
 					</li>
 					{{end}}
 				{{end}}

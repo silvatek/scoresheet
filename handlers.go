@@ -25,7 +25,7 @@ type pageData struct {
 	GameID  string
 	GameURL string
 	Encoded string
-	History []string
+	History []GameRef
 }
 
 type Template struct {
@@ -180,11 +180,21 @@ func getExistingGameList(c echo.Context) string {
 	return strings.Trim(gameList, " ")
 }
 
-func gameHistory(c echo.Context) []string {
+type GameRef struct {
+	ID    string
+	Title string
+}
+
+func gameHistory(c echo.Context) []GameRef {
 	cookieValue := getExistingGameList(c)
-	var games []string
+	var ids []string
+	var games []GameRef
 	if cookieValue != "" {
-		games = strings.Split(cookieValue, " ")
+		ids = strings.Split(cookieValue, " ")
+		for _, id := range ids {
+			gs := GameRef{id, dataStore.getGame(ctx(c), id).Title}
+			games = append(games, gs)
+		}
 	}
 	return games
 }
