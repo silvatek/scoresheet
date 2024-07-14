@@ -5,7 +5,7 @@
 			{{range $event := .Game.Events}} 
 			<div class="row eventrow">
 				<div class="col-3">
-					P{{$event.Period}}&nbsp;{{$event.ClockTime}}<br>
+					<span class="event_clock_time">P{{$event.Period}}&nbsp;{{$event.ClockTime}}</span><br>
 					{{$event.GameTime}}
 				</div>
 				<div class="col-9">
