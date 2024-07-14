@@ -104,73 +104,83 @@
 				{{end}}
 			</div>
 			<h3>Game summary</h3>
-			<h4>Period summary</h4>
-			<table id="period_summary" class="table">
-				<tr>
-					<th>&nbsp;</th>
-					{{range $values := .Summary.Periods}}
-						<th>{{$values.Title}}</th>
-					{{end}}
-				</tr>
-				<tr>
-					<td>Home Goals</td>
-					{{range $values := .Summary.Periods}}
-						<td>{{$values.HomeGoals}}</td>
-					{{end}}
-				</tr>
-				<tr>
-					<td>Away Goals</td>
-					{{range $values := .Summary.Periods}}
-						<td>{{$values.AwayGoals}}</td>
-					{{end}}
-				</tr>
-				<tr>
-					<td>Home Penalties</td>
-					{{range $values := .Summary.Periods}}
-						<td>{{$values.HomePenalties}}</td>
-					{{end}}
-				</tr>
-				<tr>
-					<td>Away Penalties</td>
-					{{range $values := .Summary.Periods}}
-						<td>{{$values.AwayPenalties}}</td>
-					{{end}}
-				</tr>
-			</table>
-			<h4>Home Scoring</h4>
-			<table id="home_scoring" class="table">
-				<tr>
-					<th>Player</th>
-					<th>Goals</th>
-					<th>Assists</th>
-					<th>Minutes</th>
-				</tr>
-				{{range $player, $values := .Summary.HomePlayers}} 
-					<tr>
-						<td>{{$player}}</td>
-						<td>{{$values.Goals}}</td>
-						<td>{{$values.Assists}}</td>
-						<td>{{$values.Minutes}}</td>
-					</tr>
-				{{end}}
-			</table>
-			<h4>Away Scoring</h4>
-			<table id="away_scoring" class="table">
-				<tr>
-					<th>Player</th>
-					<th>Goals</th>
-					<th>Assists</th>
-					<th>Minutes</th>
-				</tr>
-				{{range $player, $values := .Summary.AwayPlayers}} 
-					<tr>
-						<td>{{$player}}</td>
-						<td>{{$values.Goals}}</td>
-						<td>{{$values.Assists}}</td>
-						<td>{{$values.Minutes}}</td>
-					</tr>
-				{{end}}
-			</table>
+			<div class="row">
+				<div class="col-sm-12 col-md-8 col-lg-6">
+					<h4>Period summary</h4>
+					<table id="period_summary" class="table">
+						<tr>
+							<th>&nbsp;</th>
+							{{range $values := .Summary.Periods}}
+								<th>{{$values.Title}}</th>
+							{{end}}
+						</tr>
+						<tr>
+							<td>Home Goals</td>
+							{{range $values := .Summary.Periods}}
+								<td>{{$values.HomeGoals}}</td>
+							{{end}}
+						</tr>
+						<tr>
+							<td>Away Goals</td>
+							{{range $values := .Summary.Periods}}
+								<td>{{$values.AwayGoals}}</td>
+							{{end}}
+						</tr>
+						<tr>
+							<td>Home Penalties</td>
+							{{range $values := .Summary.Periods}}
+								<td>{{$values.HomePenalties}}</td>
+							{{end}}
+						</tr>
+						<tr>
+							<td>Away Penalties</td>
+							{{range $values := .Summary.Periods}}
+								<td>{{$values.AwayPenalties}}</td>
+							{{end}}
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 col-lg-6">
+					<h4>Home Scoring</h4>
+					<table id="home_scoring" class="table">					
+						<tr>
+							<th>Player</th>
+							<th>Goals</th>
+							<th>Assists</th>
+							<th>Minutes</th>
+						</tr>
+						{{range $player, $values := .Summary.HomePlayers}} 
+							<tr>
+								<td>{{$player}}</td>
+								<td>{{$values.Goals}}</td>
+								<td>{{$values.Assists}}</td>
+								<td>{{$values.Minutes}}</td>
+							</tr>
+						{{end}}
+					</table>
+				</div>
+				<div class="col-sm-12 col-lg-6">
+					<h4>Away Scoring</h4>
+					<table id="away_scoring" class="table">
+						<tr>
+							<th>Player</th>
+							<th>Goals</th>
+							<th>Assists</th>
+							<th>Minutes</th>
+						</tr>
+						{{range $player, $values := .Summary.AwayPlayers}} 
+							<tr>
+								<td>{{$player}}</td>
+								<td>{{$values.Goals}}</td>
+								<td>{{$values.Assists}}</td>
+								<td>{{$values.Minutes}}</td>
+							</tr>
+						{{end}}
+					</table>
+				</div>
+			</row>
 		</div>
 		<div class="footer">
 			<div class="controlbar">
