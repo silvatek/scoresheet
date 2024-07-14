@@ -176,6 +176,7 @@ func gamePage(c echo.Context) error {
 
 	var data pageData
 	data.Game = dataStore.getGame(ctx, gameId)
+	data.PageHeading = data.Game.Title
 
 	if data.Game.ID != gameId {
 		return showErrorPage(fmt.Sprintf("Game not found: %s", gameId), c)

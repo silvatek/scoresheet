@@ -1,8 +1,36 @@
 {{define "content"}}
 		<div>
 			<div class="error" id="error_message">{{.Error}}</div>
-			<h3>Events</h3>
-			<table id="game_events" class="table">
+			<h3>Game record</h3>
+			{{range $event := .Game.Events}} 
+			<div class="row eventrow">
+				<div class="col-3">
+					P{{$event.Period}}&nbsp;{{$event.ClockTime}}<br>
+					{{$event.GameTime}}
+				</div>
+				<div class="col-9">
+					{{$event.HomeAway}} {{$event.EventType}} 							
+					{{if $event.Category}}
+						({{$event.Category}})
+					{{end}}
+					by #{{$event.Player}}<br>
+					{{if $event.Assist1}}
+						Assisted by 
+						#{{$event.Assist1}}
+					{{end}}
+					{{if $event.Assist2}}
+						and #{{$event.Assist2}}				
+					{{end}}
+					{{if $event.Minutes}}
+						{{$event.Minutes}} minutes
+					{{else}}
+						<td>&nbsp;</td>
+					{{end}}
+				</div>
+			</div>
+			{{end}}
+
+			<!-- <table id="game_events" class="table">
 				<thead>
 					<tr>
 						<th>Period</th>
@@ -43,7 +71,7 @@
 					</tr>
 				{{end}}
 				</tbody>
-			</table>
+			</table> -->
 			<div class="controlbar" id="control_bar">
 				{{if .Game.LockedWith}}
 				<a href="/unlockGame?game={{.Game.ID}}">
@@ -75,7 +103,7 @@
 				</div>
 				{{end}}
 			</div>
-			<h3>Summary</h3>
+			<h3>Game summary</h3>
 			<h4>Period summary</h4>
 			<table id="period_summary" class="table">
 				<tr>
