@@ -107,6 +107,7 @@ const GameRequestKey = GameRequestKeyType("game_request")
 type GameRequestContext struct {
 	GameId     string
 	RemoteAddr string
+	ReqPath    string
 	Request    *http.Request
 	TraceID    string
 	SpanID     string
@@ -129,7 +130,7 @@ func parseCloudTrace(trace string) (string, string, string) {
 }
 
 func gctx(c echo.Context) context.Context {
-	gameId := c.Param("gameId")
+	gameId := c.Param("id")
 	if gameId == "" {
 		gameId = c.QueryParam("game_id")
 	}
@@ -138,6 +139,7 @@ func gctx(c echo.Context) context.Context {
 	}
 	values := GameRequestContext{
 		GameId:     gameId,
+		ReqPath:    c.Path(),
 		RemoteAddr: c.RealIP(),
 		Request:    c.Request(),
 	}

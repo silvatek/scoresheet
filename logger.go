@@ -45,7 +45,7 @@ func (logger *Logger) init() {
 }
 
 func gcpLogging() bool {
-	return runningOnGCloud()
+	return true //runningOnGCloud()
 }
 
 func (logger *Logger) debug(template string, args ...any) {
@@ -103,6 +103,8 @@ func (logger *Logger) gCloudLog(ctx context.Context, severity string, template s
 		if ok {
 			entry.TraceID = data.TraceID
 			entry.SpanID = data.SpanID
+			entry.Labels["game_id"] = data.GameId
+			entry.Labels["request_path"] = data.ReqPath
 		}
 	}
 
