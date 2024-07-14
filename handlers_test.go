@@ -90,14 +90,27 @@ func TestNewEventPage(t *testing.T) {
 
 func TestAddEventPost(t *testing.T) {
 	dataStore = testDataStore()
-	setupDataStore(dataStore)
+	dataStore.putGame(context.TODO(), "CODE1", Game{ID: "CODE1"})
 
 	wt := webTest(t)
-	wt.post("game_id=CODE1")
+	wt.post("game_id=CODE1&period=2")
 
 	addEventPost(wt.ec)
 
 	wt.confirmRedirect("/game/CODE1")
+
+	game := dataStore.getGame(context.TODO(), "CODE1")
+	if len(game.Events) < 1 {
+		t.Error("Game has no events after addEventPost")
+		return
+	}
+	event := game.Events[0]
+	if event.Period != 2 {
+		t.Errorf("Unexpected event period, %d", event.Period)
+	}
+	if event.Minutes != 2 {
+		t.Errorf("Unexpected event period, %d", event.Period)
+	}
 }
 
 func TestAddGamePost(t *testing.T) {

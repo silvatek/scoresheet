@@ -11,7 +11,6 @@ import (
 
 	"html/template"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -269,28 +268,20 @@ func newEventPage(c echo.Context) error {
 
 func addEventPost(c echo.Context) error {
 	gameId := c.FormValue("game_id")
-	playerId, _ := strconv.Atoi(c.FormValue("player"))
 
 	ctx := gctx(c)
-	logs.debug1(ctx, "Received new event data, Game ID = %s, Player = %d, Event = %s",
-		gameId, playerId, c.FormValue("event_type"))
 
 	game := dataStore.getGame(ctx, gameId)
 
-	period, _ := strconv.Atoi(c.FormValue("period"))
-	clockTime := c.FormValue("minutes") + ":" + c.FormValue("seconds")
-	homeAway := c.FormValue("home_away")
-	category := c.FormValue("category")
+	var event Event
 
-	assist1, _ := strconv.Atoi(c.FormValue("assist1"))
-	assist2, _ := strconv.Atoi(c.FormValue("assist2"))
-	minutes, _ := strconv.Atoi(c.FormValue("minutes"))
+	err := c.Bind(&event)
+	logs.debug("Bind errors: %v", err)
 
-	if c.FormValue("event_type") == "Penalty" {
-		AddPenalty(&game, period, EventTime(clockTime), homeAway, playerId, minutes, category)
-	} else {
-		AddGoal(&game, period, EventTime(clockTime), homeAway, playerId, assist1, assist2, category)
-	}
+	event.ClockTime = EventTime(c.FormValue("minutes") + ":" + c.FormValue("seconds"))
+	event.GameTime = ClockToGameTime(event.Period, event.ClockTime)
+
+	AddEvent(&game, event)
 
 	dataStore.putGame(ctx, gameId, game)
 
@@ -307,9 +298,7 @@ func addGamePost(c echo.Context) error {
 
 	var game Game
 
-	game.HomeTeam = c.FormValue("home_team")
-	game.AwayTeam = c.FormValue("away_team")
-	game.GameDate = c.FormValue("game_date")
+	c.Bind(&game)
 
 	gameDate, err := time.Parse("2006-01-02", game.GameDate)
 	if err == nil {

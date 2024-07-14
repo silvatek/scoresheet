@@ -12,9 +12,9 @@ type Game struct {
 	Title       string
 	Events      []Event
 	Period      int
-	GameDate    string
-	HomeTeam    string
-	AwayTeam    string
+	GameDate    string `form:"game_date"`
+	HomeTeam    string `form:"home_team"`
+	AwayTeam    string `form:"away_team"`
 	Venue       string
 	Competition string
 	LockedWith  string
@@ -28,15 +28,16 @@ const HOME = "Home"
 const AWAY = "Away"
 
 type Event struct {
-	ClockTime, GameTime EventTime
-	Period              int
-	EventType           string
-	HomeAway            string
-	Category            string
-	Player              int
-	Assist1             int
-	Assist2             int
-	Minutes             int
+	ClockTime EventTime
+	GameTime  EventTime
+	Period    int    `form:"period"`
+	EventType string `form:"event_type"`
+	HomeAway  string `form:"home_away"`
+	Category  string `form:"category"`
+	Player    int    `form:"player"`
+	Assist1   int    `form:"assist1"`
+	Assist2   int    `form:"assist2"`
+	Minutes   int    `form:"penaltyMinutes"`
 }
 
 type PlayerSummary struct {
@@ -59,6 +60,14 @@ type GameSummary struct {
 	HomePlayers map[int]PlayerSummary
 	AwayPlayers map[int]PlayerSummary
 	Periods     []PeriodSummary
+}
+
+func AddEvent(game *Game, event Event) {
+	game.Events = append(game.Events, event)
+
+	if event.Period > game.Period {
+		game.Period = event.Period
+	}
 }
 
 func AddGoal(game *Game, period int, clockTime EventTime, homeAway string, player int, assist1 int, assist2 int, category string) {
