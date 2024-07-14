@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"net/http"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -22,7 +21,6 @@ func main() {
 	setupDataStore(dataStore)
 
 	addr := defaultAddr
-	// $PORT environment variable is provided in the Kubernetes deployment.
 	if p := os.Getenv("PORT"); p != "" {
 		addr = ":" + p
 	}

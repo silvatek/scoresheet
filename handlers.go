@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/skip2/go-qrcode"
 )
 
@@ -25,6 +26,7 @@ type pageData struct {
 	GameID  string
 	GameURL string
 	Encoded string
+	Csrf    interface{}
 	History []GameRef
 }
 
@@ -32,38 +34,47 @@ type Template struct {
 	//templates *template.Template
 }
 
-func addRoutes(c *echo.Echo) {
-	c.Renderer = &Template{}
+func addRoutes(e *echo.Echo) {
+	e.Renderer = &Template{}
 
-	c.Static("/static", "template/static")
+	e.Use(middleware.Recover())
+	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{TokenLookup: "form:_csrf"}))
 
-	c.GET("/", homePage)
-	c.GET("/games", gameRedirect)
-	c.GET("/game/:id", gamePage)
-	c.GET("/sharegame", shareGame)
-	c.GET("/qrcode", qrCodeGenerator)
-	c.GET("/newEvent", newEventPage)
-	c.POST("/addEvent", addEventPost)
-	c.GET("/newGame", newGamePage)
-	c.POST("/addGame", addGamePost)
-	c.GET("/deleteEvent", deleteEventPage)
-	c.POST("/deleteGameEvent", deleteEventPost)
-	c.GET("/lockGame", lockGamePage)
-	c.POST("/lockGame", lockGamePost)
-	c.GET("/unlockGame", unlockGamePage)
-	c.POST("/unlockGame", unlockGamePost)
-	c.GET("/error", errorPage)
+	e.Static("/static", "template/static")
+
+	e.GET("/", homePage)
+	e.GET("/games", gameRedirect)
+	e.GET("/game/:id", gamePage)
+	e.GET("/sharegame", shareGame)
+	e.GET("/qrcode", qrCodeGenerator)
+	e.GET("/newEvent", newEventPage)
+	e.POST("/addEvent", addEventPost)
+	e.GET("/newGame", newGamePage)
+	e.POST("/addGame", addGamePost)
+	e.GET("/deleteEvent", deleteEventPage)
+	e.POST("/deleteGameEvent", deleteEventPost)
+	e.GET("/lockGame", lockGamePage)
+	e.POST("/lockGame", lockGamePost)
+	e.GET("/unlockGame", unlockGamePage)
+	e.POST("/unlockGame", unlockGamePost)
+	e.GET("/error", errorPage)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return showTemplatePage(name, data, w)
+	return showTemplatePage(name, data, w, c)
 }
 
-func showTemplatePage(templateName string, data any, w io.Writer) error {
+func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context) error {
 	t, err := template.ParseFiles("template/base.html", "template/"+templateName+".html")
 	if err != nil {
 		logs.error("Error parsing template: %+v", err)
 		os.Exit(-2)
+	}
+
+	data1, ok := data.(pageData)
+	if ok {
+		data1.Csrf = c.Get(middleware.DefaultCSRFConfig.ContextKey)
+		data = data1
 	}
 
 	if err := t.ExecuteTemplate(w, "base", data); err != nil {
@@ -284,7 +295,8 @@ func addEventPost(c echo.Context) error {
 }
 
 func newGamePage(c echo.Context) error {
-	return c.Render(http.StatusOK, "newgame", "")
+	data := pageData{}
+	return c.Render(http.StatusOK, "newgame", data)
 }
 
 func addGamePost(c echo.Context) error {

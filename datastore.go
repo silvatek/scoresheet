@@ -72,7 +72,7 @@ const TEST_ID_2 = "CODE2"
 func testGame1() Game {
 	game1 := Game{
 		ID:       TEST_ID_1,
-		Title:    "Test Game",
+		Title:    "Blues @ Reds, 27 May 2024",
 		Period:   1,
 		HomeTeam: "Reds",
 		AwayTeam: "Blues",

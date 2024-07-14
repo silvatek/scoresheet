@@ -4,7 +4,8 @@
 		</div>
 		
 		<form method="POST" action="/addGame">
-
+			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
+			
 			<label for="home_team" class="formlabel">Home team:</label>
 			<input type="text" autofocus="true" id="home_team" name="home_team"><br>
 

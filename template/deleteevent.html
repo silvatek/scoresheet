@@ -13,6 +13,7 @@
 				
 		<form method="POST" action="/deleteGameEvent">
 			<input type="hidden" id="gameIdField" name="game_id" value="{{.Game.ID}}" />
+			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
 			
 			{{range $event := .Game.Events}} 
 				<div>

@@ -45,7 +45,7 @@ func (logger *Logger) init() {
 }
 
 func gcpLogging() bool {
-	return true //runningOnGCloud()
+	return runningOnGCloud()
 }
 
 func (logger *Logger) debug(template string, args ...any) {

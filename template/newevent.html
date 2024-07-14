@@ -5,6 +5,7 @@
 		
 		<form method="POST" action="/addEvent">
 			<input type="hidden" id="gameIdField" name="game_id" value="{{.Game.ID}}" />
+			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
 
 			<label for="period" class="formlabel">Period:</label>
 			<input type="number" autofocus="true" id="period" name="period" value="{{.Game.Period}}" min="1" max="9"><br>
