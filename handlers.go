@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"time"
 
 	"os"
 
@@ -226,7 +227,9 @@ func gameHistory(c echo.Context) []GameRef {
 		ids = strings.Split(cookieValue, " ")
 		for _, id := range ids {
 			gs := GameRef{id, dataStore.getGame(gctx(c), id).Title}
-			games = append(games, gs)
+			if gs.Title != "" {
+				games = append(games, gs)
+			}
 		}
 	}
 	return games
@@ -307,7 +310,14 @@ func addGamePost(c echo.Context) error {
 	game.HomeTeam = c.FormValue("home_team")
 	game.AwayTeam = c.FormValue("away_team")
 	game.GameDate = c.FormValue("game_date")
-	game.Title = game.AwayTeam + " @ " + game.HomeTeam + " on " + game.GameDate
+
+	gameDate, err := time.Parse("2006-01-02", game.GameDate)
+	if err == nil {
+		game.Title = game.AwayTeam + " @ " + game.HomeTeam + ", " + gameDate.Format("2 Jan 2006")
+	} else {
+		logs.debug("Could not parse game date `%s`, %v", game.GameDate, err)
+		game.Title = game.AwayTeam + " @ " + game.HomeTeam + " on " + game.GameDate
+	}
 
 	gameId := dataStore.addGame(context.Background(), &game)
 
