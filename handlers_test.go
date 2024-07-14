@@ -93,7 +93,7 @@ func TestAddEventPost(t *testing.T) {
 	dataStore.putGame(context.TODO(), "CODE1", Game{ID: "CODE1"})
 
 	wt := webTest(t)
-	wt.post("game_id=CODE1&period=2")
+	wt.post("game_id=CODE1&period=2&minutes=5&seconds=0")
 
 	addEventPost(wt.ec)
 
@@ -106,10 +106,10 @@ func TestAddEventPost(t *testing.T) {
 	}
 	event := game.Events[0]
 	if event.Period != 2 {
-		t.Errorf("Unexpected event period, %d", event.Period)
+		t.Errorf("Unexpected event period: %d", event.Period)
 	}
-	if event.Minutes != 2 {
-		t.Errorf("Unexpected event period, %d", event.Period)
+	if event.Minutes != 0 {
+		t.Errorf("Unexpected event minutes: %d", event.Minutes)
 	}
 }
 
