@@ -1,8 +1,4 @@
 {{define "content"}}
-		<div class="message">
-			<h1>New Game</h1>
-		</div>
-		
 		<form method="POST" action="/addGame">
 			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
 

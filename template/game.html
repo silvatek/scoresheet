@@ -1,47 +1,50 @@
 {{define "content"}}
 		<div>
-			<h1>{{.Game.Title}}</h1>
-			<div class="error">{{.Error}}</div>
+			<div class="error" id="error_message">{{.Error}}</div>
 			<h3>Events</h3>
-			<table>
-				<tr>
-					<th>Period</th>
-					<th>Clock</th>
-					<th>Event</th>
-					<th>Player</th>
-					<th>Assists</th>
-					<th>Minutes</th>
-				</tr>
-			{{range $event := .Game.Events}} 
-				<tr>
-					<td>{{$event.Period}}&nbsp;</td>
-					<td>{{$event.ClockTime}} ({{$event.GameTime}})</td>
-					<td>{{$event.HomeAway}} {{$event.EventType}}
-						{{if $event.Category}}
-							({{$event.Category}})
+			<table id="game_events" class="table">
+				<thead>
+					<tr>
+						<th>Period</th>
+						<th>Clock</th>
+						<th>Event</th>
+						<th>Player</th>
+						<th>Assists</th>
+						<th>Minutes</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{range $event := .Game.Events}} 
+					<tr>
+						<td>{{$event.Period}}&nbsp;</td>
+						<td>{{$event.ClockTime}} ({{$event.GameTime}})</td>
+						<td>{{$event.HomeAway}} {{$event.EventType}}
+							{{if $event.Category}}
+								({{$event.Category}})
+							{{end}}
+						</td> 				
+						<td>{{$event.Player}}</td>
+						<td>
+						{{if $event.Assist1}}
+						{{$event.Assist1}}
+						{{else}}
+							&nbsp;
 						{{end}}
-					</td> 				
-					<td>{{$event.Player}}</td>
-					<td>
-					{{if $event.Assist1}}
-					{{$event.Assist1}}
-					{{else}}
-						&nbsp;
-					{{end}}
 
-					{{if $event.Assist2}}
-						{{$event.Assist2}}				
-					{{end}}
-					</td>
-					{{if $event.Minutes}}
-						<td>{{$event.Minutes}}</td>
-					{{else}}
-						<td>&nbsp;</td>
-					{{end}}
-				</tr>
-			{{end}}
+						{{if $event.Assist2}}
+							{{$event.Assist2}}				
+						{{end}}
+						</td>
+						{{if $event.Minutes}}
+							<td>{{$event.Minutes}}</td>
+						{{else}}
+							<td>&nbsp;</td>
+						{{end}}
+					</tr>
+				{{end}}
+				</tbody>
 			</table>
-			<div class="controlbar">
+			<div class="controlbar" id="control_bar">
 				{{if .Game.LockedWith}}
 				<a href="/unlockGame?game={{.Game.ID}}">
 					Unlock Game
@@ -58,27 +61,27 @@
 				</div>
 				<div class="endbutton">
 					<a href="/newEvent?game={{.Game.ID}}&type=HG">
-						<button>Home Goal</button>
+						<button id="btn_home_goal">Home Goal</button>
 					</a>
 					<a href="/newEvent?game={{.Game.ID}}&type=HP">
-						<button>Home Penalty</button>
+						<button id="btn_home_penalty">Home Penalty</button>
 					</a>
 					<a href="/newEvent?game={{.Game.ID}}&type=AG">
-						<button>Away Goal</button>
+						<button id="btn_away_goal">Away Goal</button>
 					</a>
 					<a href="/newEvent?game={{.Game.ID}}&type=AP">
-						<button>Away Penalty</button>
+						<button id="btn_away_penalty">Away Penalty</button>
 					</a>
 				</div>
 				{{end}}
 			</div>
 			<h3>Summary</h3>
 			<h4>Period summary</h4>
-			<table>
+			<table id="period_summary" class="table">
 				<tr>
-					<td>&nbsp;</td>
+					<th>&nbsp;</th>
 					{{range $values := .Summary.Periods}}
-						<td>{{$values.Title}}</td>
+						<th>{{$values.Title}}</th>
 					{{end}}
 				</tr>
 				<tr>
@@ -107,7 +110,7 @@
 				</tr>
 			</table>
 			<h4>Home Scoring</h4>
-			<table>
+			<table id="home_scoring" class="table">
 				<tr>
 					<th>Player</th>
 					<th>Goals</th>
@@ -124,7 +127,7 @@
 				{{end}}
 			</table>
 			<h4>Away Scoring</h4>
-			<table>
+			<table id="away_scoring" class="table">
 				<tr>
 					<th>Player</th>
 					<th>Goals</th>

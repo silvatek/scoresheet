@@ -10,8 +10,12 @@ body {
 
  .headingblock {
 	display: inline-block;
-	/* align-items: flex-start;
-	justify-content: space-between; */
+	text-align: center;
+	background-color: lightblue;
+ }
+
+ .footerblock {
+	background-color: lightblue;
  }
 
 /* h1 {

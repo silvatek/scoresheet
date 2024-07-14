@@ -1,8 +1,4 @@
-{{define "content"}}
-		<div class="message">
-			<h1>{{.EventHA}} {{.EventType}} for game {{.Game.ID}}</h1>
-		</div>
-		
+{{define "content"}}	
 		<form method="POST" action="/addEvent">
 			<input type="hidden" id="gameIdField" name="game_id" value="{{.Game.ID}}" />
 			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />

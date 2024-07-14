@@ -19,17 +19,18 @@ import (
 )
 
 type pageData struct {
-	Message   string
-	Error     string
-	Game      Game
-	Summary   GameSummary
-	GameID    string
-	GameURL   string
-	Encoded   string
-	EventType string
-	EventHA   string
-	Csrf      interface{}
-	History   []GameRef
+	Message     string
+	Error       string
+	Game        Game
+	Summary     GameSummary
+	GameID      string
+	GameURL     string
+	Encoded     string
+	EventType   string
+	EventHA     string
+	PageHeading string
+	Csrf        interface{}
+	History     []GameRef
 }
 
 type Template struct {
@@ -76,6 +77,11 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 	data1, ok := data.(pageData)
 	if ok {
 		data1.Csrf = c.Get(middleware.DefaultCSRFConfig.ContextKey)
+
+		if data1.PageHeading == "" {
+			data1.PageHeading = "Ice Hockey Scoresheet"
+		}
+
 		data = data1
 	}
 
@@ -277,6 +283,8 @@ func newEventPage(c echo.Context) error {
 	} else {
 		data.EventType = "Goal"
 	}
+
+	data.PageHeading = data.EventHA + " " + data.EventType + ", " + game.Title
 
 	return c.Render(http.StatusOK, "newevent", data)
 }
