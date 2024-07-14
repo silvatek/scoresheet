@@ -19,15 +19,17 @@ import (
 )
 
 type pageData struct {
-	Message string
-	Error   string
-	Game    Game
-	Summary GameSummary
-	GameID  string
-	GameURL string
-	Encoded string
-	Csrf    interface{}
-	History []GameRef
+	Message   string
+	Error     string
+	Game      Game
+	Summary   GameSummary
+	GameID    string
+	GameURL   string
+	Encoded   string
+	EventType string
+	EventHA   string
+	Csrf      interface{}
+	History   []GameRef
 }
 
 type Template struct {
@@ -249,6 +251,7 @@ func showErrorPage(error string, c echo.Context) error {
 
 func newEventPage(c echo.Context) error {
 	gameId := c.QueryParam("game")
+	eventType := c.QueryParam("type")
 
 	ctx := gctx(c)
 	logs.debug1(ctx, "Showing new event page for game %s", gameId)
@@ -261,6 +264,18 @@ func newEventPage(c echo.Context) error {
 
 	data := pageData{
 		Game: game,
+	}
+
+	if eventType[0:1] == "A" {
+		data.EventHA = "Away"
+	} else {
+		data.EventHA = "Home"
+	}
+
+	if eventType[1:2] == "P" {
+		data.EventType = "Penalty"
+	} else {
+		data.EventType = "Goal"
 	}
 
 	return c.Render(http.StatusOK, "newevent", data)

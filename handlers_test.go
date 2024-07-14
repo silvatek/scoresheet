@@ -80,12 +80,13 @@ func TestNewEventPage(t *testing.T) {
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
+	wt.setQuery("type", "HG")
 	wt.setQuery("game", "CODE1")
 
 	newEventPage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmHtmlIncludes("h1", "New event for game CODE1")
+	wt.confirmHtmlIncludes("h1", "Home Goal for game CODE1")
 }
 
 func TestAddEventPost(t *testing.T) {

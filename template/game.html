@@ -57,8 +57,17 @@
 					</a>
 				</div>
 				<div class="endbutton">
-					<a href="/newEvent?game={{.Game.ID}}">
-						<button>Add event</button>
+					<a href="/newEvent?game={{.Game.ID}}&type=HG">
+						<button>Home Goal</button>
+					</a>
+					<a href="/newEvent?game={{.Game.ID}}&type=HP">
+						<button>Home Penalty</button>
+					</a>
+					<a href="/newEvent?game={{.Game.ID}}&type=AG">
+						<button>Away Goal</button>
+					</a>
+					<a href="/newEvent?game={{.Game.ID}}&type=AP">
+						<button>Away Penalty</button>
 					</a>
 				</div>
 				{{end}}
