@@ -27,6 +27,7 @@ func main() {
 	logs.info("Server listening on port %s", addr)
 
 	e := echo.New()
+	e.HideBanner = true
 
 	addRoutes(e)
 
