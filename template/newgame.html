@@ -5,7 +5,7 @@
 		
 		<form method="POST" action="/addGame">
 			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
-			
+
 			<label for="home_team" class="formlabel">Home team:</label>
 			<input type="text" autofocus="true" id="home_team" name="home_team"><br>
 
@@ -13,7 +13,7 @@
 			<input type="text" id="away_team" name="away_team"><br>
 
 			<label for="game_date" class="formlabel">Game date:</label>
-			<input type="text" id="game_date" name="game_date" size="10"> (yyyy-mm-dd)<br>
+			<input type="date" id="game_date" name="game_date" size="10"><br>
 
 			<br>
 			<div class="formlabel">&nbsp;</div>
