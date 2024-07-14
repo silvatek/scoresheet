@@ -38,7 +38,7 @@ func TestGamePage(t *testing.T) {
 
 	wt.confirmSuccessResponse()
 
-	wt.confirmHtmlIncludes("h1", "Blues @ Reds, 2024-05-27")
+	wt.confirmHtmlIncludes("h1", "Blues @ Reds, 27 May 2024")
 	wt.confirmHtmlIncludes("td", "14:25 (25:35)")
 }
 
