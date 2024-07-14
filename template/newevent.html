@@ -12,10 +12,9 @@
 			<label for="period" class="formlabel">Period:</label>
 			<input type="number" autofocus="true" id="period" name="period" value="{{.Game.Period}}" min="1" max="9"><br>
 
-			<label for="clock_time" class="formlabel">Time:</label>
+			<label for="clock_time" class="formlabel">Clock Time:</label>
 			<input type="number" id="minutes" name="minutes" min="0" max="20" size="2"> :
-			<input type="number" id="seconds" name="seconds" min="0" max="59" size="2">
-			(clock time)<br>
+			<input type="number" id="seconds" name="seconds" min="0" max="59" size="2"><br>
 
 			<label for="player" class="formlabel">Player:</label>
 			<input type="number" id="player" name="player" min="1" max="99"><br>
@@ -38,24 +37,26 @@
 			{{if eq .EventType "Penalty"}}
 			<label for="category" class="formlabel">Category:</label>
 				<select id="category" name="category">
-					<option>Slashing</option>
-					<option>Hooking</option>
-					<option>Tripping</option>
-					<option>Holding</option>
-					<option>Roughing</option>
-					<option>Interference</option>
-					<option>High Stick</option>
-					<option>Delay Game</option>
-					<option>Too Many</option>
-					<option>Charging</option>
+					<option selected> </option>
 					<option>Boarding</option>
+					<option>Charging</option>
+					<option>Delay Game</option>
 					<option>Fighting</option>
+					<option>High Stick</option>
+					<option>Holding</option>
+					<option>Hooking</option>
+					<option>Interference</option>
+					<option>Roughing</option>
+					<option>Slashing</option>
 					<option>Spearing</option>
+					<option>Too Many</option>
+					<option>Tripping</option>
 					<option>Unsportsmanlike</option>
+					<option>Other</option>
 				</select>
 				<br>
 				<label for="assist1" class="formlabel">Minutes:</label>
-				<input type="number" id="penaltyMinutes" name="penaltyMinutes" min="2" max="10">
+				<input type="number" id="penaltyMinutes" name="penaltyMinutes" min="2" max="60" value="2">
 				<br>
 			{{end}}
 
@@ -63,16 +64,9 @@
 			<div class="formlabel">&nbsp;</div>
 			<input type="submit" value="Submit">
 		</form>
-
+		
 		<div>
-			&nbsp;<br/>
-			Goal categories are "E" (even-handed), "PP" and "PK".		
-		</div>
-		<div>
-			For penalties use a short version of the penalty description such as 
-			"Trip" or "Hook".
-		</div>
-		<div>
+			<br>
 			Note that this site does not currently support recording the time that
 			delayed penalties occurred, or the time that penalities finished.
 		</div>
