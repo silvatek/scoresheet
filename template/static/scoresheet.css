@@ -9,8 +9,10 @@ body {
  }
 
  .headingblock {
+	margin-top: 1em;
 	display: inline-block;
 	text-align: center;
+	background-color: #1967d217;
 	border-color: #1967D2;
 	border-style: solid;
 	border-width: 2px;
@@ -18,25 +20,30 @@ body {
 	border-top-right-radius: 40px;
  }
 
+ .main-section {
+	border-width: 2px;
+	border-left-style: solid;
+	border-left-color: #1967D2;
+	border-right-style: solid;
+	border-right-color: #1967D2;
+	padding: 4px;
+ }
+
  .footerblock {
+	background-color: #1967d217;
 	border-color: #1967D2;
 	border-style: solid;
 	border-width: 2px;
 	border-bottom-left-radius: 40px;
 	border-bottom-right-radius: 40px;
+	margin-bottom: 1em;
  }
 
  .eventrow {
-	background-color: #DDDDDD;
+	background-color: #1967d217;
 	margin: 2px;
 	border-radius: 8px;	
  }
-
-/* h1 {
-	font-size: 24px;
-	font-weight: bold;
-	margin-bottom: 0px;
-} */
 
 .h1image {
 	padding-top: 32px;
@@ -46,16 +53,9 @@ body {
 	margin-right: 12px;
 }
 
-/* h2 {
-	font-size: 18px;
-	font-weight: normal;
-	margin-top: 4px;
+h4 {
+	font-style: italic;
 }
-
-h3 {
-	font-size: 20px;
-	margin-bottom: 0px;
-} */
 
 .scoreboard {
 	font-size: xx-large;
@@ -74,30 +74,6 @@ a:hover {
 	margin-top: 8px;
 	margin-bottom: 8px;
 }
-/*
-.container {
-	max-width: 700px;
-	margin-left: auto;
-	margin-right: auto;
-} 
-*/
-/*
-.hero {
-	margin-top: 172px;
-}
-
-.hero .logo {
-	width: 140px;
-	float: left;
-	margin-right: 32px;
-}
-
-.hero .message {
-	font-size: 15px;
-	text-align: center;
-	margin-bottom: 24px;
-}
-*/
 .details {
 	clear: both;
 	height: 400px;
@@ -124,25 +100,6 @@ code {
 	padding: 0 6px;
 	font-weight: 500;
 }
-/*
-.cta {
-	display: inline-block;
-}
-.cta a {
-	color: white;
-	text-decoration: none;
-	background-color: rgb(14, 101, 241);
-	padding: 8px 12px;
-	margin-top: 8px;
-	min-height: 36px;
-	border-radius: 2px;
-	font-weight: 600;
-}
-
-.cta a:hover {
-    background-color: rgb(66, 133, 244, 0.9);
-}
-*/
 .formlabel {
 	min-width: 20%;
 	display: inline-block;
@@ -160,14 +117,27 @@ code {
 	float: left;
 }
 
-.endbutton {
-	padding-top: 3px;
+input[type=button], input[type=submit], input[type=reset], .endbutton button {
+	border-radius: 6px;
+	margin-top: 4px;
+	padding: 2px;
+	border-color: #1967D2;
+	background-color: #1967d217;
+}
+
+.endbutton button {
 	float: right;
+	margin-left: 4px;
 }
 
 table, th, td {
     border: 1px solid;
     border-collapse: collapse;
+	border-color: #1967D2;
+}
+
+.table th {
+	background-color: #1967d217;
 }
 
 table {
@@ -179,33 +149,3 @@ table {
 	font-weight: bold;
 	color: red;
 }
-/*
-@media (max-width: 600px) {
-    .hero .logo {
-        float: initial;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-	.container {
-        margin-top: 0;
-	}
-
-    .hero {
-        margin-top: 0;
-        margin-bottom: 24px;
-	}
-}
-*/
-/*
-@media (prefers-color-scheme: dark) {
-    body {
-        background: black;
-        color:white;
-    }
-	a {
-		color: #70A0FF;
-	}
-}
-*/
