@@ -100,19 +100,35 @@ func errorMessage(errorCode string) string {
 	return ""
 }
 
-type GameIdKeyType string
-type RemoteAddrKeyType string
+type GameRequestKeyType string
 
-const GameIdKey = GameIdKeyType("game_id")
-const RemoteAddrKey = RemoteAddrKeyType("remote_addr")
+const GameRequestKey = GameRequestKeyType("game_request")
 
 type GameRequestContext struct {
 	GameId     string
 	RemoteAddr string
 	Request    *http.Request
+	TraceID    string
+	SpanID     string
 }
 
-func ctx(c echo.Context) context.Context {
+func parseCloudTrace(trace string) (string, string, string) {
+	if strings.Contains(trace, "/") {
+		parts := strings.Split(trace, "/")
+
+		if len(parts) >= 2 {
+			if strings.Contains(parts[1], ";") {
+				spanParts := strings.Split(parts[1], ";")
+				return parts[0], spanParts[0], spanParts[1]
+			} else {
+				return parts[0], parts[1], ""
+			}
+		}
+	}
+	return "", "", ""
+}
+
+func gctx(c echo.Context) context.Context {
 	gameId := c.Param("gameId")
 	if gameId == "" {
 		gameId = c.QueryParam("game_id")
@@ -123,14 +139,18 @@ func ctx(c echo.Context) context.Context {
 	values := GameRequestContext{
 		GameId:     gameId,
 		RemoteAddr: c.RealIP(),
+		Request:    c.Request(),
 	}
-	return context.WithValue(c.Request().Context(), GameIdKey, values)
+	if len(c.Request().Header["X-Cloud-Trace-Context"]) > 0 {
+		values.TraceID, values.SpanID, _ = parseCloudTrace(c.Request().Header["X-Cloud-Trace-Context"][0])
+	}
+	return context.WithValue(c.Request().Context(), GameRequestKey, values)
 }
 
 func gamePage(c echo.Context) error {
 	gameId := c.Param("id")
 
-	ctx := ctx(c)
+	ctx := gctx(c)
 	logs.info1(ctx, "GET for game ID: %s", gameId)
 
 	var data pageData
@@ -157,7 +177,7 @@ func setGameHistoryCookie(gameId string, c echo.Context) {
 	gameList := getExistingGameList(c)
 
 	gameList = gameId + " " + strings.Trim(strings.ReplaceAll(gameList, gameId, " "), " ")
-	logs.debug1(context.Background(), "New game history: %s", gameList)
+	logs.debug1(gctx(c), "New game history: %s", gameList)
 
 	cookie := http.Cookie{
 		Name:     "gameHistory",
@@ -175,7 +195,7 @@ func getExistingGameList(c echo.Context) string {
 	current, err := c.Cookie("gameHistory")
 	if err != http.ErrNoCookie {
 		gameList = current.Value
-		logs.debug1(context.Background(), "Loaded game history: %s", gameList)
+		logs.debug1(gctx(c), "Loaded game history: %s", gameList)
 	}
 	return strings.Trim(gameList, " ")
 }
@@ -192,7 +212,7 @@ func gameHistory(c echo.Context) []GameRef {
 	if cookieValue != "" {
 		ids = strings.Split(cookieValue, " ")
 		for _, id := range ids {
-			gs := GameRef{id, dataStore.getGame(ctx(c), id).Title}
+			gs := GameRef{id, dataStore.getGame(gctx(c), id).Title}
 			games = append(games, gs)
 		}
 	}
@@ -215,7 +235,7 @@ func showErrorPage(error string, c echo.Context) error {
 func newEventPage(c echo.Context) error {
 	gameId := c.QueryParam("game")
 
-	ctx := context.Background() //gameRequestContext(gameId, r)
+	ctx := gctx(c)
 	logs.debug1(ctx, "Showing new event page for game %s", gameId)
 
 	game := dataStore.getGame(ctx, gameId)
@@ -235,7 +255,7 @@ func addEventPost(c echo.Context) error {
 	gameId := c.FormValue("game_id")
 	playerId, _ := strconv.Atoi(c.FormValue("player"))
 
-	ctx := ctx(c)
+	ctx := gctx(c)
 	logs.debug1(ctx, "Received new event data, Game ID = %s, Player = %d, Event = %s",
 		gameId, playerId, c.FormValue("event_type"))
 
@@ -283,7 +303,7 @@ func addGamePost(c echo.Context) error {
 func deleteEventPage(c echo.Context) error {
 	gameId := c.QueryParam("game")
 
-	ctx := ctx(c)
+	ctx := gctx(c)
 	logs.debug1(ctx, "Showing delete event page for game %s", gameId)
 
 	game := dataStore.getGame(ctx, gameId)
@@ -304,7 +324,7 @@ func deleteEventPage(c echo.Context) error {
 func deleteEventPost(c echo.Context) error {
 
 	gameId := c.FormValue("game_id")
-	ctx := ctx(c)
+	ctx := gctx(c)
 
 	requestedEvent := c.FormValue("event_summary")
 	logs.debug("Received delete event request for %s, %s", gameId, requestedEvent)
@@ -353,7 +373,7 @@ func deleteEventPost(c echo.Context) error {
 func lockGamePage(c echo.Context) error {
 	gameId := c.QueryParam("game")
 
-	ctx := ctx(c)
+	ctx := gctx(c)
 
 	game := dataStore.getGame(ctx, gameId)
 	data := pageData{
@@ -366,7 +386,7 @@ func lockGamePage(c echo.Context) error {
 func lockGamePost(c echo.Context) error {
 	gameId := c.FormValue("game_id")
 
-	ctx := ctx(c)
+	ctx := gctx(c)
 
 	game := dataStore.getGame(ctx, gameId)
 
@@ -383,7 +403,7 @@ func lockGamePost(c echo.Context) error {
 func unlockGamePage(c echo.Context) error {
 	gameId := c.QueryParam("game")
 
-	game := dataStore.getGame(ctx(c), gameId)
+	game := dataStore.getGame(gctx(c), gameId)
 	data := pageData{
 		Game: game,
 	}
@@ -393,7 +413,7 @@ func unlockGamePage(c echo.Context) error {
 func unlockGamePost(c echo.Context) error {
 	gameId := c.FormValue("game_id")
 
-	ctx := ctx(c)
+	ctx := gctx(c)
 
 	game := dataStore.getGame(ctx, gameId)
 

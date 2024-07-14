@@ -36,12 +36,16 @@ type HttpRequestLog struct {
 }
 
 func (logger *Logger) init() {
-	if runningOnGCloud() {
+	if gcpLogging() {
 		logger.mode = GCLOUD_LOGS
 		logger.project = "icehockeyscoresheet"
 	} else {
 		logger.mode = LOCAL_LOGS
 	}
+}
+
+func gcpLogging() bool {
+	return runningOnGCloud()
 }
 
 func (logger *Logger) debug(template string, args ...any) {
@@ -91,6 +95,15 @@ func (logger *Logger) gCloudLog(ctx context.Context, severity string, template s
 
 	entry.Labels = map[string]string{
 		"appname": logger.project,
+	}
+
+	value := ctx.Value(GameRequestKey)
+	if value != nil {
+		data, ok := value.(GameRequestContext)
+		if ok {
+			entry.TraceID = data.TraceID
+			entry.SpanID = data.SpanID
+		}
 	}
 
 	logger.encoder.Encode(entry)
