@@ -4,9 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/firestore v1.15.0
-	cloud.google.com/go/logging v1.10.0
 	github.com/PuerkitoBio/goquery v1.9.2
-	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	google.golang.org/api v0.180.0
