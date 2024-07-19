@@ -110,6 +110,7 @@ func getStyleCookie(c echo.Context) (*http.Cookie, error) {
 func setStyleCookie(stylesheetName string, c echo.Context) {
 	stylecookie := new(http.Cookie)
 	stylecookie.Name = "scoresheetstyle"
+	stylecookie.Path = "/"
 	stylecookie.Value = stylesheetName
 	stylecookie.SameSite = http.SameSiteStrictMode
 	stylecookie.Secure = true
