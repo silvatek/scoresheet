@@ -39,6 +39,11 @@ body {
 	margin-bottom: 1em;
  }
 
+ .footertext {
+	font-size: small;
+	font-style: italic;
+ }
+
  .eventrow {
 	background-color: #1967d217;
 	margin: 2px;
