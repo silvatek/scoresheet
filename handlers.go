@@ -29,6 +29,7 @@ type pageData struct {
 	EventType   string
 	EventHA     string
 	PageHeading string
+	Stylesheet  string
 	Csrf        interface{}
 	History     []GameRef
 }
@@ -82,6 +83,14 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 			data1.PageHeading = "Ice Hockey Scoresheet"
 		}
 
+		stylecookie, err := getStyleCookie(c)
+		if err == nil {
+			data1.Stylesheet = stylecookie.Value
+		} else {
+			data1.Stylesheet = "scoresheet"
+			setStyleCookie(data1.Stylesheet, c)
+		}
+
 		data = data1
 	}
 
@@ -92,6 +101,20 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 	}
 
 	return err
+}
+
+func getStyleCookie(c echo.Context) (*http.Cookie, error) {
+	return c.Cookie("scoresheetstyle")
+}
+
+func setStyleCookie(stylesheetName string, c echo.Context) {
+	stylecookie := new(http.Cookie)
+	stylecookie.Name = "scoresheetstyle"
+	stylecookie.Value = stylesheetName
+	stylecookie.SameSite = http.SameSiteStrictMode
+	stylecookie.Secure = true
+	stylecookie.Expires = time.Now().Add(2 * 365 * time.Hour)
+	c.SetCookie(stylecookie)
 }
 
 func homePage(c echo.Context) error {
