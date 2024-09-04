@@ -15,14 +15,11 @@ body {
     background-repeat: no-repeat;
     background-position: center top;
     background-size: 100% 100px;
-	margin-top: 1em;
 	display: inline-block;
 	text-align: center;
 	border-color: rgb(0, 70, 80);
-	border-style: solid;
+	border-style: none;
 	border-width: 2px;
-	border-top-left-radius: 40px;
-	border-top-right-radius: 40px;
  }
 
  .topdivide {

@@ -1,16 +1,22 @@
+/*
+	base: rgb(12,12,12)
+	fade to: rgb(193,218,220)
+	
+*/
 body {
 	font-family: Futura, Arial, sans-serif;
 	font-display: fallback;	
-	/* background: url('/static/cloud_bg.svg'); 
+	background: url('/static/simple/background-15.jpg');
+	background-color: rgb(183, 206,217);
 	background-size: cover;
 	background-position: center;
-	*/
-	line-height: 1.6;
+	line-height: 1.6;	
  }
 
  .headingblock {
-	margin-top: 1em;
+	margin-top: 0;
 	display: inline-block;
+	max-height: 6em;
 	text-align: center;
 	background-color: #c8d9e6;	
  }
