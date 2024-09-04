@@ -1,7 +1,9 @@
 body {
 	font-family: Arial, sans-serif;
 	font-display: fallback;
-	/* background: url('/static/cloud_bg.svg'); 
+    background-color: rgb(236, 119, 35);
+    
+	/*  
 	background-size: cover;
 	background-position: center;
 	*/
@@ -9,29 +11,36 @@ body {
  }
 
  .headingblock {
+    background-image: url('/static/retro/top_bottom.png');
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: 100% 100px;
 	margin-top: 1em;
 	display: inline-block;
 	text-align: center;
-	background-color: white;
-	border-color: white;
+	border-color: rgb(0, 70, 80);
 	border-style: solid;
 	border-width: 2px;
 	border-top-left-radius: 40px;
 	border-top-right-radius: 40px;
  }
 
+ .topdivide {
+    background-image: url('/static/retro/lines_1_2.png');
+    background-repeat: no-repeat;
+ }
+
  .main-section {
 	border-width: 2px;
 	border-left-style: solid;
-	border-left-color: white;
+	border-left-color: rgb(0, 70, 80);
 	border-right-style: solid;
-	border-right-color: white;
+	border-right-color: rgb(0, 70, 80);
 	padding: 1em;
  }
 
  .footerblock {
-	background-color: white;
-	border-color: white;
+	border-color: rgb(0, 70, 80);
 	border-style: solid;
 	border-width: 2px;
 	border-bottom-left-radius: 40px;
@@ -39,8 +48,18 @@ body {
 	margin-bottom: 1em;
  }
 
+ .footertext {
+	font-size: small;
+	font-style: italic;
+ }
+
+ .style-links {
+    color: white;    
+ }
+
  .eventrow {
-	background-color: #dddddd;
+	background-color: white;
+    border-bottom: black;
 	margin: 2px;
 	border-radius: 8px;	
  }
@@ -121,8 +140,8 @@ input[type=button], input[type=submit], input[type=reset], .endbutton button {
 	border-radius: 6px;
 	margin-top: 4px;
 	padding: 2px;
-	border-color: black;
-	background-color: white;
+	border-color: #1967D2;
+	background-color: #1967d217;
 }
 
 .endbutton button {
@@ -133,11 +152,11 @@ input[type=button], input[type=submit], input[type=reset], .endbutton button {
 table, th, td {
     border: 1px solid;
     border-collapse: collapse;
-	border-color: black;
+	border-color: rgb(0, 70, 80);
 }
 
 .table th {
-	background-color: #dddddd;
+	background-color: #1967d217;
 }
 
 table {

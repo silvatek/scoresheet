@@ -62,6 +62,7 @@ func addRoutes(e *echo.Echo) {
 	e.GET("/unlockGame", unlockGamePage)
 	e.POST("/unlockGame", unlockGamePost)
 	e.GET("/error", errorPage)
+	e.GET("/setstyle", styleSet)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -84,10 +85,10 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 		}
 
 		stylecookie, err := getStyleCookie(c)
-		if err == nil {
+		if err == nil && stylecookie.Value != "" {
 			data1.Stylesheet = stylecookie.Value
 		} else {
-			data1.Stylesheet = "scoresheet"
+			data1.Stylesheet = "scoresheet-original"
 			setStyleCookie(data1.Stylesheet, c)
 		}
 
@@ -527,4 +528,12 @@ func qrCodeGenerator(c echo.Context) error {
 
 	q, _ := qrcode.New(gameUrl, qrcode.High)
 	return q.Write(320, c.Response())
+}
+
+func styleSet(c echo.Context) error {
+	styleName := c.QueryParam("style")
+
+	setStyleCookie("scoresheet-"+styleName, c)
+
+	return c.Redirect(http.StatusSeeOther, "/")
 }

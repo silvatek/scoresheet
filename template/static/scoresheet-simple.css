@@ -1,6 +1,6 @@
 body {
-	font-family: Arial, sans-serif;
-	font-display: fallback;
+	font-family: Futura, Arial, sans-serif;
+	font-display: fallback;	
 	/* background: url('/static/cloud_bg.svg'); 
 	background-size: cover;
 	background-position: center;
@@ -12,30 +12,19 @@ body {
 	margin-top: 1em;
 	display: inline-block;
 	text-align: center;
-	background-color: #1967d217;
-	border-color: #1967D2;
-	border-style: solid;
-	border-width: 2px;
-	border-top-left-radius: 40px;
-	border-top-right-radius: 40px;
+	background-color: #c8d9e6;	
+ }
+
+ h1 {
+	text-transform:uppercase;
  }
 
  .main-section {
-	border-width: 2px;
-	border-left-style: solid;
-	border-left-color: #1967D2;
-	border-right-style: solid;
-	border-right-color: #1967D2;
 	padding: 1em;
  }
 
  .footerblock {
-	background-color: #1967d217;
-	border-color: #1967D2;
-	border-style: solid;
-	border-width: 2px;
-	border-bottom-left-radius: 40px;
-	border-bottom-right-radius: 40px;
+	border-top: #2f4156 solid;
 	margin-bottom: 1em;
  }
 
