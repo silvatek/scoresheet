@@ -88,7 +88,7 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 		if err == nil && stylecookie.Value != "" {
 			data1.Stylesheet = stylecookie.Value
 		} else {
-			data1.Stylesheet = "scoresheet-original"
+			data1.Stylesheet = "scoresheet-simple"
 			setStyleCookie(data1.Stylesheet, c)
 		}
 
