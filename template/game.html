@@ -1,7 +1,11 @@
 {{define "content"}}
 		<div>
 			<div>
+				<h1>{{.Game.AwayTeam}} @ {{.Game.HomeTeam}}</h1>
+				<div class="gamedate">{{.Game.GameDate}}</div>
+
 				<div class="error" id="error_message">{{.Error}}</div>
+				
 				<h3>Game record</h3>
 				{{range $event := .Game.Events}} 
 				<div class="row eventrow">

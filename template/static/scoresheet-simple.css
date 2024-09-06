@@ -6,24 +6,56 @@
 body {
 	font-family: Futura, Arial, sans-serif;
 	font-display: fallback;	
-	background: url('/static/simple/background-15.jpg');
+	background: url('/static/simple/background-2.jpg');
 	background-color: rgb(183, 206,217);
 	background-size: cover;
-	background-position: center;
+	background-position: center top;
 	line-height: 1.6;	
  }
 
  .headingblock {
 	margin-top: 0;
 	display: inline-block;
-	max-height: 6em;
-	text-align: center;
+	width: 100%;
 	background-color: #c8d9e6;	
  }
 
- h1 {
-	text-transform:uppercase;
+ .titlelogo {
+	display: inline;
+	padding-left: 1em;
  }
+
+ .titletext {
+	display: inline;
+	text-transform:uppercase;
+	font-family: Futura, Arial, sans-serif;
+	font-weight: bold;
+	font-size: 16pt;
+	color: rgb(63,126,145);
+	padding-top: 24px;
+	padding-left: 1em;
+ }
+
+ h1 {
+	text-align: center;
+	text-transform:uppercase;
+	font-weight: bold;
+}
+
+h3 {
+	text-align: left;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 14pt;
+	color: rgb(63,126,145);
+	border-bottom: solid 3px;
+}
+
+
+h4 {
+	font-style: italic;
+}
+
 
  .main-section {
 	padding: 1em;
@@ -39,6 +71,13 @@ body {
 	font-style: italic;
  }
 
+ .gamedate {
+	text-align: center;
+	font-weight: bold;
+	font-size: 14pt;
+	color: rgb(63,126,145);
+ }
+
  .eventrow {
 	background-color: #1967d217;
 	margin: 2px;
@@ -51,10 +90,6 @@ body {
 	margin-bottom: 0px;
 	height: 24px;
 	margin-right: 12px;
-}
-
-h4 {
-	font-style: italic;
 }
 
 .scoreboard {
