@@ -53,7 +53,10 @@ h3 {
 
 
 h4 {
-	font-style: italic;
+	text-align: left;
+	font-weight: bold;
+	font-size: 14pt;
+	color: rgb(63,126,145);
 }
 
 
@@ -70,6 +73,34 @@ h4 {
 	font-size: small;
 	font-style: italic;
  }
+
+.frontpanel {
+	background-color: white;
+	padding: 1em;
+	margin: 8px;
+	border-radius: 16px;
+}
+
+.upperpanel {
+	background-color: white;
+	border-top-left-radius: 16px;
+	border-top-right-radius: 16px;
+	padding: 1em;
+	margin-top: 8px;
+	margin-left: 8px;
+	margin-right: 8px;
+}
+
+.lowerpanel {
+	background-color: white;
+	border-top-right-radius: 16px;
+	border-bottom-left-radius: 16px;
+	border-bottom-right-radius: 16px;
+	padding: 1em;
+	margin-bottom: 8px;
+	margin-left: 8px;
+	margin-right: 8px;
+}
 
  .gamedate {
 	text-align: center;

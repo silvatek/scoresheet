@@ -1,61 +1,65 @@
-{{define "content"}}
-		<div class="row" id="intro">
-			<div class="col">
-				Use this site to record details of UK recreational ice hockey games.
-			</div>
-		</div>
+{{define "content"}}		
 
-		<div class="row">
-			<h3>Record new game</h3>
-		</div>
-		<div class="row"><div class="col">Use this to start recording a new game.</div></div>
-		<form id="newgame" action="/newGame">
-			<div class="row">
-				<div class="col-4 formlabel">&nbsp;</div>
-				<div class="col-8">
-					<input type="submit" value="New game">
-				</div>
-			</div>
-		</form>
-
-		<div class="row">
-			<h3>View existing game</h3>
-		</div>
-		<div class="row">
-			<div class="col">You can recall details of an existing game if you know the game ID.</div></div>
-		<form id="viewgame" action="/games">
-			<div class="row">
-				<label for="game_id" class="col-4 formlabel">Game ID:</label>
-				<div class="col-8">
-					<input type="text" id="game_id" name="game_id">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-4 formlabel">&nbsp;</div>
-				<div class="col-8">
-					<input type="submit" value="View game">
-				</div>
-			</div>
-		</form>
-
-
-		{{if gt (len .History) 0}}
-		<div class="row">
-			<h3>Recent games</h3>
-		</div>
-		<div class="row"><div class="col">You have recently accessed the following games on this device:-</div></div>
 		<div class="row">			
-			<div class="col">
-			<ul>
-				{{range $game := .History}} 
-				{{if $game}}
-					<li>
-						<a href="/game/{{$game.ID}}">{{$game.Title}}</a>
-					</li>
-					{{end}}
-				{{end}}
-			</ul>
+			<div class="col-sm-12 col-md-8">
+				<div class="row">
+					<div class="col-6 frontpanel">
+						<h4>Record new game</h4>
+						<form id="newgame" action="/newGame">
+							<input type="submit" value="&nbsp;&rarr;&nbsp;">
+						</form>
+					</div>
+					<div class="col-5 frontpanel">
+						<h4>View existing game</h4>
+						<form id="viewgame" action="/games">
+							<div class="row">
+								<label for="game_id" class="col-4 formlabel">Game ID:</label>
+								<div class="col-8">
+									<input type="text" id="game_id" name="game_id" size="12">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-4 formlabel">&nbsp;</div>
+								<div class="col-8">
+									<input type="submit" value="View game">
+								</div>
+							</div>
+						</form>
+		
+					</div>
+					<div class="col-6 upperpanel">
+						<h4>View recent games</h4>
+					</div>
+					<div class="col-11 lowerpanel">
+						{{if gt (len .History) 0}}
+						<div class="row">			
+							<div class="col">
+							<ul>
+								{{range $game := .History}} 
+								{{if $game}}
+									<li>
+										<a href="/game/{{$game.ID}}">{{$game.Title}}</a>
+									</li>
+									{{end}}
+								{{end}}
+							</ul>
+						</div>
+						</div>
+						{{end}}
+					</div>
+
+				</div>		
+			</div>
+			<div class="col-sm-12 col-md-4">
+				<div class="row" id="intro">				
+					<div class="col">
+						<h3>What we do:</h3>
+						<div>
+							Use this site to record details of UK recreational ice hockey games.
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-		</div>
-		{{end}}
+
 {{end}}
