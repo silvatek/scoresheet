@@ -2,50 +2,59 @@
 
 		<div class="row">			
 			<div class="col-sm-12 col-md-8">
-				<div class="row">
-					<div class="col-6 frontpanel">
-						<h4>Record new game</h4>
-						<form id="newgame" action="/newGame">
-							<input type="submit" value="&nbsp;&rarr;&nbsp;">
-						</form>
+				<div class="row g-3">
+					<div class="col-6">
+						<div class="frontpanel">
+							<h4>Record new game</h4>
+							<form id="newgame" action="/newGame">
+								<input type="submit" value="New game">
+							</form>
+						</div>
 					</div>
-					<div class="col-5 frontpanel">
-						<h4>View existing game</h4>
-						<form id="viewgame" action="/games">
-							<div class="row">
-								<label for="game_id" class="col-4 formlabel">Game ID:</label>
-								<div class="col-8">
-									<input type="text" id="game_id" name="game_id" size="12">
+					<div class="col-6">
+						<div class="frontpanel">
+							<h4>View existing game</h4>
+							<form id="viewgame" action="/games">
+								<div class="row">
+									<label for="game_id" class="col-4 formlabel">Game ID:</label>
+									<div class="col-8">
+										<input type="text" id="game_id" name="game_id" size="12">
+									</div>
 								</div>
-							</div>
-							<div class="row">
-								<div class="col-4 formlabel">&nbsp;</div>
-								<div class="col-8">
-									<input type="submit" value="View game">
+								<div class="row">
+									<div class="col-4 formlabel">&nbsp;</div>
+									<div class="col-8">
+										<input type="submit" value="View game">
+									</div>
 								</div>
-							</div>
-						</form>
+							</form>
+						</div>
 		
 					</div>
-					<div class="col-6 upperpanel">
-						<h4>View recent games</h4>
-					</div>
-					<div class="col-11 lowerpanel">
-						{{if gt (len .History) 0}}
-						<div class="row">			
-							<div class="col">
-							<ul>
-								{{range $game := .History}} 
-								{{if $game}}
-									<li>
-										<a href="/game/{{$game.ID}}">{{$game.Title}}</a>
-									</li>
+				</div>
+				<div class="row">
+					<div class="col">&nbsp;</div>
+				</div>
+				<div class="row g-3">
+					<div class="col-12">
+						<div class="frontpanel">
+							{{if gt (len .History) 0}}
+							<h4>View recent games</h4>
+							<div class="row">			
+								<div class="col">
+								<ul>
+									{{range $game := .History}} 
+									{{if $game}}
+										<li>
+											<a href="/game/{{$game.ID}}">{{$game.Title}}</a>
+										</li>
+										{{end}}
 									{{end}}
-								{{end}}
-							</ul>
+								</ul>
+							</div>
+							</div>
+							{{end}}
 						</div>
-						</div>
-						{{end}}
 					</div>
 
 				</div>		

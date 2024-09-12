@@ -1,7 +1,7 @@
 /*
-	base: rgb(12,12,12)
-	fade to: rgb(193,218,220)
-	
+	background: rgb(183, 206,217)
+	titles: rgb(63,126,145)
+	borders: rgb(193,218,230)
 */
 body {
 	font-family: Futura, Arial, sans-serif;
@@ -17,7 +17,7 @@ body {
 	margin-top: 0;
 	display: inline-block;
 	width: 100%;
-	background-color: #c8d9e6;	
+	background-color: rgb(193,218,230);	
  }
 
  .titlelogo {
@@ -49,6 +49,7 @@ h3 {
 	font-size: 14pt;
 	color: rgb(63,126,145);
 	border-bottom: solid 3px;
+	padding-top: 4pt;
 }
 
 
@@ -57,16 +58,17 @@ h4 {
 	font-weight: bold;
 	font-size: 14pt;
 	color: rgb(63,126,145);
+	padding-top: 8pt;
 }
 
 
  .main-section {
-	padding: 1em;
+	padding: 1rem;
  }
 
  .footerblock {
 	border-top: #2f4156 solid;
-	margin-bottom: 1em;
+	margin-bottom: 1rem;
  }
 
  .footertext {
@@ -76,30 +78,9 @@ h4 {
 
 .frontpanel {
 	background-color: white;
-	padding: 1em;
-	margin: 8px;
 	border-radius: 16px;
-}
-
-.upperpanel {
-	background-color: white;
-	border-top-left-radius: 16px;
-	border-top-right-radius: 16px;
-	padding: 1em;
-	margin-top: 8px;
-	margin-left: 8px;
-	margin-right: 8px;
-}
-
-.lowerpanel {
-	background-color: white;
-	border-top-right-radius: 16px;
-	border-bottom-left-radius: 16px;
-	border-bottom-right-radius: 16px;
-	padding: 1em;
-	margin-bottom: 8px;
-	margin-left: 8px;
-	margin-right: 8px;
+	padding: 1rem;
+	height: 100%;
 }
 
  .gamedate {
@@ -110,7 +91,8 @@ h4 {
  }
 
  .eventrow {
-	background-color: #1967d217;
+	/* background-color: #1967d217; */
+	background-color: rgba(193,218,230,0.5);
 	margin: 2px;
 	border-radius: 8px;	
  }
@@ -177,6 +159,13 @@ code {
 	display: flex;
 	align-items: flex-start;
   	justify-content: space-between;
+	overflow: auto;
+	/* clear: both; */
+}
+
+.endbutton button {
+	float: right;
+	margin-left: 4px;
 }
 
 .leftlink {
@@ -186,24 +175,31 @@ code {
 input[type=button], input[type=submit], input[type=reset], .endbutton button {
 	border-radius: 6px;
 	margin-top: 4px;
-	padding: 2px;
-	border-color: #1967D2;
+	padding: 0.5rem 1rem 0.5rem;
+	color: rgb(63,126,145);
+	/* border-color: #1967d217; */
+	border: none;
 	background-color: #1967d217;
 }
 
-.endbutton button {
-	float: right;
-	margin-left: 4px;
-}
-
-table, th, td {
-    border: 1px solid;
+.summary-table td {
+    border: 2pt solid;
     border-collapse: collapse;
-	border-color: #1967D2;
+	border-color: rgb(193,218,230);
+	background-color: rgba(255,255,255,0.5);
 }
 
-.table th {
-	background-color: #1967d217;
+.summary-table th.hidden {
+	visibility: hidden;
+	border: none;
+}
+
+.summary-table th {
+    border: 2pt solid;
+	font-weight: normal;
+    border-collapse: collapse;
+	border-color: rgb(193,218,230);
+	background-color: rgba(193,218,230,0.5);
 }
 
 table {
