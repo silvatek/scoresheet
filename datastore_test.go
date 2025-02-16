@@ -14,9 +14,9 @@ func TestRandomId(t *testing.T) {
 }
 
 func TestAddGame(t *testing.T) {
-	store := testDataStore()
+	store := GameStore{datastore: testDataStore()}
 	var game Game
-	id := store.addGame(context.Background(), &game)
+	id := store.addGame(context.Background(), game)
 
 	if len(id) != 9 {
 		t.Errorf("Random ID for new game was not the correct length: %s", id)

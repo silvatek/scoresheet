@@ -9,8 +9,6 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-const GAMES_COLLECTION = "Games"
-
 type FireDataStore struct {
 	//Context  context.Context
 	Client   *firestore.Client

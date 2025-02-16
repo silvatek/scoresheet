@@ -8,7 +8,7 @@ import (
 
 const defaultAddr = "localhost:8080"
 
-var dataStore DataStore
+var dataStore GameStore
 var logs Logger
 
 // main starts an http server on the $PORT environment variable.
@@ -39,15 +39,17 @@ func runningOnGCloud() bool {
 	return len(gCloudServiceName) > 0
 }
 
-func createDataStore() DataStore {
+func createDataStore() GameStore {
+	var store GameStore
 	if runningOnGCloud() {
-		return fireDataStore()
+		store.datastore = fireDataStore()
 	} else {
-		return testDataStore()
+		store.datastore = testDataStore()
 	}
+	return store
 }
 
-func setupDataStore(ds DataStore) {
+func setupDataStore(ds GameStore) {
 	if ds.isEmpty() {
 		addTestGames(ds)
 	} else {

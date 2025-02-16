@@ -31,7 +31,7 @@ func TestGamePage(t *testing.T) {
 	wt.setParam("id", "CODE1")
 	defer wt.showBodyOnFail()
 
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	addTestGames(dataStore)
 
 	gamePage(wt.ec)
@@ -53,7 +53,7 @@ func TestNewGamePage(t *testing.T) {
 }
 
 func TestSetupDataStore(t *testing.T) {
-	dataStore := testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 
 	if !dataStore.isEmpty() {
 		t.Error("Datastore should be empty before setup")
@@ -76,7 +76,7 @@ func TestGameRedirect(t *testing.T) {
 }
 
 func TestNewEventPage(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
@@ -90,7 +90,7 @@ func TestNewEventPage(t *testing.T) {
 }
 
 func TestAddEventPost(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	dataStore.putGame(context.TODO(), "CODE1", Game{ID: "CODE1"})
 
 	wt := webTest(t)
@@ -115,7 +115,7 @@ func TestAddEventPost(t *testing.T) {
 }
 
 func TestAddGamePost(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 
 	if !dataStore.isEmpty() {
 		t.Error("Datastore should be empty before test")
@@ -132,7 +132,7 @@ func TestAddGamePost(t *testing.T) {
 }
 
 func TestLockGamePage(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
@@ -146,7 +146,7 @@ func TestLockGamePage(t *testing.T) {
 }
 
 func TestLockGamePost(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
@@ -158,7 +158,7 @@ func TestLockGamePost(t *testing.T) {
 }
 
 func TestUnlockGamePage(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
@@ -173,7 +173,7 @@ func TestUnlockGamePage(t *testing.T) {
 }
 
 func TestUnlockGamePost(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	game := testGame2()
 	dataStore.putGame(context.Background(), game.ID, game)
 
@@ -186,7 +186,7 @@ func TestUnlockGamePost(t *testing.T) {
 }
 
 func TestDeleteEventPage(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
@@ -200,7 +200,7 @@ func TestDeleteEventPage(t *testing.T) {
 }
 
 func TestDeleteEventPost(t *testing.T) {
-	dataStore = testDataStore()
+	dataStore = GameStore{datastore: testDataStore()}
 	setupDataStore(dataStore)
 
 	wt := webTest(t)

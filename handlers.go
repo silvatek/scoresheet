@@ -362,7 +362,7 @@ func addGamePost(c echo.Context) error {
 		game.Title = game.AwayTeam + " @ " + game.HomeTeam + " on " + game.GameDate
 	}
 
-	gameId := dataStore.addGame(context.Background(), &game)
+	gameId := dataStore.addGame(context.Background(), game)
 
 	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
