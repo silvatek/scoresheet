@@ -18,8 +18,8 @@ type Game struct {
 	Venue       string
 	Competition string
 	LockedWith  string
-	HomePlayers map[int]string
-	AwayPlayers map[int]string
+	HomePlayers map[string]string
+	AwayPlayers map[string]string
 }
 
 type EventTime string
@@ -225,19 +225,19 @@ func SortEvents(game *Game) {
 }
 
 func AddPlayer(game *Game, homeAway string, playerNum int, name string) {
-	var team *map[int]string
+	var team *map[string]string
 	if homeAway == HOME {
 		if game.HomePlayers == nil {
-			game.HomePlayers = make(map[int]string)
+			game.HomePlayers = make(map[string]string)
 		}
 		team = &game.HomePlayers
 	} else if homeAway == AWAY {
 		if game.AwayPlayers == nil {
-			game.AwayPlayers = make(map[int]string)
+			game.AwayPlayers = make(map[string]string)
 		}
 		team = &game.AwayPlayers
 	} else {
 		return
 	}
-	(*team)[playerNum] = name
+	(*team)[strconv.Itoa(playerNum)] = name
 }
