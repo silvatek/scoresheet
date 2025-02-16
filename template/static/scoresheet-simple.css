@@ -217,3 +217,8 @@ table {
 	font-weight: bold;
 	color: red;
 }
+
+.concept {
+	font-style: italic;
+	font-weight: bold;
+}

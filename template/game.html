@@ -44,17 +44,17 @@
 						&nbsp;
 					{{else}}
 					<div class="endbutton">
-						<a href="/newEvent?game={{.Game.ID}}&type=HG">
-							<button id="btn_home_goal">Home Goal</button>
-						</a>
-						<a href="/newEvent?game={{.Game.ID}}&type=HP">
-							<button id="btn_home_penalty">Home Penalty</button>
+						<a href="/newEvent?game={{.Game.ID}}&type=AP">
+							<button id="btn_away_penalty">Away Penalty</button>
 						</a>
 						<a href="/newEvent?game={{.Game.ID}}&type=AG">
 							<button id="btn_away_goal">Away Goal</button>
 						</a>
-						<a href="/newEvent?game={{.Game.ID}}&type=AP">
-							<button id="btn_away_penalty">Away Penalty</button>
+						<a href="/newEvent?game={{.Game.ID}}&type=HP">
+							<button id="btn_home_penalty">Home Penalty</button>
+						</a>
+						<a href="/newEvent?game={{.Game.ID}}&type=HG">
+							<button id="btn_home_goal">Home Goal</button>
 						</a>
 					</div>
 					{{end}}

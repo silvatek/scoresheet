@@ -11,7 +11,7 @@ func TestAddRoutes(t *testing.T) {
 	e := echo.New()
 	addRoutes(e)
 
-	if len(e.Routes()) != 20 {
+	if len(e.Routes()) != 22 {
 		t.Errorf("Unexpected number of routes: %d", len(e.Routes()))
 	}
 }

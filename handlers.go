@@ -46,6 +46,7 @@ func addRoutes(e *echo.Echo) {
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{TokenLookup: "form:_csrf"}))
 
 	e.Static("/static", "template/static")
+	e.File("/robots.txt", "template/static/robots.txt")
 
 	e.GET("/", homePage)
 	e.GET("/games", gameRedirect)
@@ -66,6 +67,7 @@ func addRoutes(e *echo.Echo) {
 	e.GET("/setstyle", styleSet)
 	e.GET("/addPlayer", addPlayerPage)
 	e.POST("/addPlayer", addPlayerPost)
+	e.GET("/help", helpPage)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -573,4 +575,9 @@ func addPlayerPost(c echo.Context) error {
 	dataStore.putGame(ctx, gameId, game)
 
 	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
+}
+
+func helpPage(c echo.Context) error {
+	var data pageData
+	return c.Render(http.StatusOK, "help", data)
 }

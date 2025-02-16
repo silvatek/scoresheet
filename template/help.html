@@ -1,0 +1,105 @@
+{{define "content"}}
+    <h2>Overview</h2>
+    <div>
+        The Ice Hockey Scoresheet web application is designed to help score keepers at UK recreational ice Hockey
+        games fill in the EIHA score sheets.
+        While completing the score sheets manually is entirely possible, it does require some non-trivial calculations...
+    </div>
+    <ul>
+        <li>Converting between the time on the game clock (period and minutes/seconds remaining) and the game time required by the score sheet</li>
+        <li>Adding up goals, assists and penalty minutes for all the players</li>
+    </ul>
+    <div>
+        The application handles these things automatically, providing the results in a format that can simply be copied onto the official score sheet.
+    </div>
+    <h4>Concepts</h4>
+    <div>
+        The basic concept is the <span class="concept">Game</span> which consits of two <span class="concept">Teams</span> 
+        and a number of <span class="concept">Events</span>. 
+    </div>
+    <div>
+        There are two main types of Event, <span class="concept">Goals</span> and <span class="concept">Penalties</span>. 
+    </div>
+    <div>
+        Each event happens at a particular time, and there are two ways to represent that time... 
+    </div>
+    <ul>
+        <li><span class="concept">Clock time</span>, which counts down from 20 minutes in each of 3 periods (plus overtime if required)</li>
+        <li><span class="concept">Game time</span>, which counts up from zero and continues across all periods</li>
+    </ul>
+    <div>
+        Clock time can be converted to game time, and vice versa.
+    </div>
+    <hr>
+    <h2>Instructions</h2>
+    <h4>Creating a new game</h4>
+    <div>
+        To start recording details of a new game, open the Home Page and click the "New Game" button.
+    </div>
+    <div>
+        Enter the names of the home and away teams, and the date on which the game takes place.
+    </div>
+    <div>
+        The new game will be automatically assigned a unique code, consisting of two groups of letters and numbers. This code can be used
+        to return to the game details later.
+    </div>
+    <h4>Recording player names</h4>
+    <div>
+        It is possible to record the player names as well as numbers, though this is not required. The players on each team are sorted by
+        number when displayed, however, so this can be a convenient way to get that sorted player list.
+    </div>
+    <div>
+        Click the "Add Player" button on the game page, then select the team (Home or Away) and enter the player number and name. It is 
+        generally better to use "surname, firstname" (or "surname, initial") format, though the page does not require this.
+    </div>
+    <h4>Recording game events</h4>
+    <div>
+        To record a new event, click one of the four buttons...
+    </div>
+    <ul>
+        <li>Home Goal</li>
+        <li>Home Penalty</li>
+        <li>Away Goal</li>
+        <li>Away Goal</li>
+    </ul>
+    <div>
+        Enter the game period and clock time for the event; it will be converted to game time when the event is saved.
+    </div>
+    <div>
+        For goals, enter the number of the player who scored it and select whether the goal was scored even-handed, short-handed (SH), 
+        on a power play (PP) as a penalty. You can also record up to two player numbers for assists.
+    </div>
+    <div>
+        For penalties, enter the player number, the type of penalty, and how many minutes. Note that not all penalty types are included
+        in the drop down, so use "Other" for anything not available.
+    </div>
+    <h4>Viewing the game summary</h4>
+    <div>
+        The game summary is built up as events are recorded for the game. The various summary tables contain all the information required 
+        to complete the corresponding sections of the official score sheet.
+    </div>
+    <h4>Locking the game record</h4>
+    <div>
+        Once the game is finished it is advisable to lock the game record so that it cannot be modified. This is especially important
+        if sharing the game record with others.
+    </div>
+    <div>
+        Click the "Lock game" button at the bottom of the game page, and enter an unlock key. The unlock key can be anything you like,
+        but you will need to remember what it is if you want to unlock the game again later to make changes.
+    </div>
+    <h4>Sharing a game</h4>
+    <div>
+        When viewing a game, use the "Share Game" button at the bottom of the page to show a link URL for the game, and also a QR code that
+        can be scanned to share that link.
+    </div>
+    <hr>
+    <h2>Frequently Asked Questions</h2>
+    <dl>
+        <dt>How do I get back to the home page?</dt>
+        <dd>Click the hockey player icon in the top-left of the screen.</dd>
+    </dl>
+    <dl>
+        <dt>How do I edit an existing game event?</dt>
+        <dd>Editing of events hasn't been implemented yet. You can delete the event and add a new one.</dd>
+    </dl>
+{{end}}
