@@ -18,6 +18,8 @@ type Game struct {
 	Venue       string
 	Competition string
 	LockedWith  string
+	HomePlayers map[int]string
+	AwayPlayers map[int]string
 }
 
 type EventTime string
@@ -220,4 +222,22 @@ func SortEvents(game *Game) {
 	sort.Slice(game.Events, func(i, j int) bool {
 		return game.Events[i].GameTime < game.Events[j].GameTime
 	})
+}
+
+func AddPlayer(game *Game, homeAway string, playerNum int, name string) {
+	var team *map[int]string
+	if homeAway == HOME {
+		if game.HomePlayers == nil {
+			game.HomePlayers = make(map[int]string)
+		}
+		team = &game.HomePlayers
+	} else if homeAway == AWAY {
+		if game.AwayPlayers == nil {
+			game.AwayPlayers = make(map[int]string)
+		}
+		team = &game.AwayPlayers
+	} else {
+		return
+	}
+	(*team)[playerNum] = name
 }

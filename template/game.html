@@ -146,10 +146,53 @@
 						</table>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-sm-12 col-lg-6">
+						<h4>Home Team Roster</h4>
+						<table id="home_roster" class="summary-table">
+							<tr>
+								<th>Number</th>
+								<th>Player Name</th>
+							</tr>
+						{{range $player, $name := .Game.HomePlayers}} 
+							<tr>
+								<td>
+									{{$player}}
+								</td>
+								<td>
+									{{$name}}
+								</td>
+							</tr>
+						{{end}}
+						</table>
+					</div>
+					<div class="col-sm-12 col-lg-6">
+						<h4>Away Team Roster</h4>
+						<table id="away_roster" class="summary-table">
+							<tr>
+								<th>Number</th>
+								<th>Player Name</th>
+							</tr>
+						{{range $player, $name := .Game.AwayPlayers}} 
+							<tr>
+								<td>
+									{{$player}}
+								</td>
+								<td>
+									{{$name}}
+								</td>
+							</tr>
+						{{end}}
+						</table>
+					</div>
+				</div>
 			</div>
 			<div class="controlbar" id="game_control_bar">
 				<div>&nbsp;</div>
 				<div class="endbutton">
+					<a href="/sharegame?game={{.Game.ID}}">
+						<button id="btn_share">Share Game</button>
+					</a>
 					{{if .Game.LockedWith}}
 					<a href="/unlockGame?game={{.Game.ID}}">
 						<button id="btn_unlock">Unlock Game</button>
@@ -161,10 +204,10 @@
 					<a href="/deleteEvent?game={{.Game.ID}}">
 						<button id="btn_delete">Delete event</button>
 					</a>
-					{{end}}
-					<a href="/sharegame?game={{.Game.ID}}">
-						<button id="btn_share">Share Game</button>
+					<a href="/addPlayer?game={{.Game.ID}}">
+						<button id="btn_add_player">Add player</button>
 					</a>
+					{{end}}
 				</div>
 			</div>
 			<div>&nbsp;</div>

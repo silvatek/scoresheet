@@ -1,0 +1,24 @@
+{{define "content"}}	
+		<form method="POST" action="/addPlayer">
+			<input type="hidden" id="gameIdField" name="game_id" value="{{.GameID}}" />
+			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
+
+			<span class="formlabel">Team:</span>
+			<input type="radio" id="home" name="home_away" value="Home" checked>
+			<label for="home" >Home</label>
+			<input type="radio" id="away" name="home_away" value="Away"> 
+			<label for="away" >Away</label>
+			<br>
+
+			<label for="player_number" class="formlabel">Player Number:</label>
+			<input type="number" id="player_number" name="player_number" min="1" max="99"><br>
+
+			<label for="player_name" class="formlabel">Player Name:</label>
+			<input type="text" id="player_name" name="player_name" placeholder="Surname, Firstname (or initial)"><br>
+
+			<br>
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="Submit">
+		</form>
+		
+{{end}}

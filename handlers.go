@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"strconv"
 	"time"
 
 	"os"
@@ -63,6 +64,8 @@ func addRoutes(e *echo.Echo) {
 	e.POST("/unlockGame", unlockGamePost)
 	e.GET("/error", errorPage)
 	e.GET("/setstyle", styleSet)
+	e.GET("/addPlayer", addPlayerPage)
+	e.POST("/addPlayer", addPlayerPost)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -536,4 +539,38 @@ func styleSet(c echo.Context) error {
 	setStyleCookie("scoresheet-"+styleName, c)
 
 	return c.Redirect(http.StatusSeeOther, "/")
+}
+
+func addPlayerPage(c echo.Context) error {
+	gameId := c.QueryParam("game")
+
+	var data pageData
+	data.GameID = gameId
+
+	return c.Render(http.StatusOK, "newplayer", data)
+}
+
+func addPlayerPost(c echo.Context) error {
+	gameId := c.FormValue("game_id")
+
+	ctx := gctx(c)
+
+	game := dataStore.getGame(ctx, gameId)
+
+	if game.LockedWith != "" {
+		return c.Redirect(http.StatusSeeOther, "/game/"+gameId+"?e=8001")
+	}
+
+	homeAway := c.FormValue("home_away")
+	playerNum, err := strconv.Atoi(c.FormValue("player_number"))
+	if err != nil {
+		return c.Redirect(http.StatusSeeOther, "/game/"+gameId+"?e=8002")
+	}
+	playerName := c.FormValue("player_name")
+
+	AddPlayer(&game, homeAway, playerNum, playerName)
+
+	dataStore.putGame(ctx, gameId, game)
+
+	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
 }
