@@ -32,7 +32,7 @@ type pageData struct {
 	PageHeading string
 	Stylesheet  string
 	Csrf        interface{}
-	History     []GameRef
+	History     []HistoryItem
 	Detail      interface{}
 }
 
@@ -135,7 +135,7 @@ func homePage(c echo.Context) error {
 
 	data := pageData{
 		Message: "Ice Hockey Scoresheet",
-		History: gameHistory(c),
+		History: getHistory(c),
 	}
 
 	return c.Render(http.StatusOK, "index", data)
@@ -236,20 +236,21 @@ func gamePage(c echo.Context) error {
 		data.Error = errorMessage(errorCode)
 	}
 
-	setGameHistoryCookie(gameId, c)
+	setGameHistoryCookie(data.Game.LinkCode(), c)
 
 	return c.Render(http.StatusOK, "game", data)
 }
 
-func setGameHistoryCookie(gameId string, c echo.Context) {
-	gameList := getExistingGameList(c)
+func setGameHistoryCookie(newItem string, c echo.Context) {
+	history := getExistingHistory(c)
 
-	gameList = gameId + " " + strings.Trim(strings.ReplaceAll(gameList, gameId, " "), " ")
-	logs.debug1(gctx(c), "New game history: %s", gameList)
+	history = AddToHistory(newItem, history)
+
+	logs.debug1(gctx(c), "New game history: %s", history)
 
 	cookie := http.Cookie{
 		Name:     "gameHistory",
-		Value:    gameList,
+		Value:    history,
 		Path:     "/",
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
@@ -258,7 +259,7 @@ func setGameHistoryCookie(gameId string, c echo.Context) {
 	c.SetCookie(&cookie)
 }
 
-func getExistingGameList(c echo.Context) string {
+func getExistingHistory(c echo.Context) string {
 	var gameList string
 	current, err := c.Cookie("gameHistory")
 	if err != http.ErrNoCookie {
@@ -268,25 +269,9 @@ func getExistingGameList(c echo.Context) string {
 	return strings.Trim(gameList, " ")
 }
 
-type GameRef struct {
-	ID    string
-	Title string
-}
-
-func gameHistory(c echo.Context) []GameRef {
-	cookieValue := getExistingGameList(c)
-	var ids []string
-	var games []GameRef
-	if cookieValue != "" {
-		ids = strings.Split(cookieValue, " ")
-		for _, id := range ids {
-			gs := GameRef{id, dataStore.getGame(gctx(c), id).Title}
-			if gs.Title != "" {
-				games = append(games, gs)
-			}
-		}
-	}
-	return games
+func getHistory(c echo.Context) []HistoryItem {
+	cookieValue := getExistingHistory(c)
+	return GetHistory(gctx(c), cookieValue)
 }
 
 func errorPage(c echo.Context) error {
@@ -629,6 +614,8 @@ func gameListPage(c echo.Context) error {
 	if errorCode != "" {
 		data.Error = errorMessage(errorCode)
 	}
+
+	setGameHistoryCookie(listData.List.LinkCode(), c)
 
 	return c.Render(http.StatusOK, "gamelist", data)
 }

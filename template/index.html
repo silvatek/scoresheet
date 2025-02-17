@@ -77,10 +77,10 @@
 							<div class="row">			
 								<div class="col">
 								<ul>
-									{{range $game := .History}} 
-									{{if $game}}
+									{{range $item := .History}} 
+									{{if $item}}
 										<li>
-											<a href="/game/{{$game.ID}}">{{$game.Title}}</a> (game)
+											<a href="{{$item.UrlPath}}">{{$item.Summary}}</a> ({{$item.ItemType}})
 										</li>
 										{{end}}
 									{{end}}
