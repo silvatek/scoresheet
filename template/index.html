@@ -6,6 +6,7 @@
 					<div class="col-12 col-md-6">
 						<div class="frontpanel">
 							<h4>Record new game</h4>
+							<div>Record game and calculate scoring totals.</div>
 							<form id="newgame" action="/newGame">
 								<input type="submit" value="New game">
 							</form>
@@ -39,6 +40,7 @@
 					<div class="col-12 col-md-6 ">
 						<div class="frontpanel">
 							<h4>Create new list</h4>
+							<div>Build lists of games for easy access and sharing.</div>
 							<form id="newlist" action="/newList">
 								<input type="submit" value="New list">
 							</form>
@@ -46,7 +48,7 @@
 					</div>
 					<div class="col-12 col-md-6">
 						<div class="frontpanel">
-							<h4>View existing game list</h4>
+							<h4>View existing list</h4>
 							<form id="viewlist" action="/lists">
 								<div class="row">
 									<label for="list_id" class="col-4 formlabel">List ID:</label>
@@ -71,14 +73,14 @@
 					<div class="col-12">
 						<div class="frontpanel">
 							{{if gt (len .History) 0}}
-							<h4>View recent games</h4>
+							<h4>History</h4>
 							<div class="row">			
 								<div class="col">
 								<ul>
 									{{range $game := .History}} 
 									{{if $game}}
 										<li>
-											<a href="/game/{{$game.ID}}">{{$game.Title}}</a>
+											<a href="/game/{{$game.ID}}">{{$game.Title}}</a> (game)
 										</li>
 										{{end}}
 									{{end}}
@@ -95,11 +97,11 @@
 				<div class="row" id="intro">				
 					<div class="col">
 						<h3>About this site:</h3>
-						<div>
+						<div class="maintext">
 							The Ice Hockey Scoresheet web application is designed to help score keepers at UK recreational ice Hockey
         					games fill in the EIHA score sheets.
 						</div>
-						<div>
+						<div class="maintext">
 							For more details, see the 
 							<a href="/help">Help page</a>.
 						</div>

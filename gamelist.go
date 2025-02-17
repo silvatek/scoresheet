@@ -21,3 +21,7 @@ func (list *GameList) AddGame(gameId string) {
 func (list GameList) IsLocked() bool {
 	return list.LockedWith != ""
 }
+
+func (list GameList) LinkCode() string {
+	return "LIST:" + list.ID
+}

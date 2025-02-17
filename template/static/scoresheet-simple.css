@@ -227,3 +227,7 @@ table {
 	font-style: italic;
 	font-weight: bold;
 }
+
+.maintext {
+	padding-bottom: 1em;
+}

@@ -22,6 +22,10 @@ type Game struct {
 	AwayPlayers map[string]string
 }
 
+type Linkable interface {
+	LinkCode() string
+}
+
 type EventTime string
 
 const GOAL = "Goal"
@@ -62,6 +66,10 @@ type GameSummary struct {
 	HomePlayers map[int]PlayerSummary
 	AwayPlayers map[int]PlayerSummary
 	Periods     []PeriodSummary
+}
+
+func (game Game) LinkCode() string {
+	return "GAME:" + game.ID
 }
 
 func AddEvent(game *Game, event Event) {
