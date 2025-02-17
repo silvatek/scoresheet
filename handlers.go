@@ -50,7 +50,8 @@ func addRoutes(e *echo.Echo) {
 	e.File("/robots.txt", "template/static/robots.txt")
 
 	e.GET("/", homePage)
-	e.GET("/games", gameRedirect)
+	e.GET("/games", codeRedirect)
+	e.GET("/lists", codeRedirect)
 	e.GET("/game/:id", gamePage)
 	e.GET("/sharegame", shareGame)
 	e.GET("/qrcode", qrCodeGenerator)
@@ -69,6 +70,9 @@ func addRoutes(e *echo.Echo) {
 	e.GET("/addPlayer", addPlayerPage)
 	e.POST("/addPlayer", addPlayerPost)
 	e.GET("/list/:id", gameListPage)
+	e.GET("/newList", newListPage)
+	e.POST("/addList", addListPost)
+	e.POST("/addListGame", addListGamePost)
 	e.GET("/help", helpPage)
 }
 
@@ -138,10 +142,20 @@ func homePage(c echo.Context) error {
 }
 
 // Redirect from query parameter URL to path parameter URL
-func gameRedirect(c echo.Context) error {
-	logs.info("Game redirect: %s", c.Path())
+func codeRedirect(c echo.Context) error {
+	logs.info("Code redirect: %s", c.Path())
+
 	gameId := strings.ToUpper(c.QueryParam("game_id"))
-	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
+	if gameId != "" {
+		return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
+	}
+
+	listId := strings.ToUpper(c.QueryParam("list_id"))
+	if listId != "" {
+		return c.Redirect(http.StatusSeeOther, "/list/"+listId)
+	}
+
+	return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func errorMessage(errorCode string) string {
@@ -617,4 +631,37 @@ func gameListPage(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, "gamelist", data)
+}
+
+func newListPage(c echo.Context) error {
+	var data pageData
+	return c.Render(http.StatusOK, "newlist", data)
+}
+
+func addListPost(c echo.Context) error {
+	ctx := gctx(c)
+
+	var list GameList
+	list.Name = c.FormValue("list_name")
+	id := dataStore.addList(ctx, list)
+
+	return c.Redirect(http.StatusSeeOther, "/list/"+id)
+}
+
+func addListGamePost(c echo.Context) error {
+	ctx := gctx(c)
+
+	listId := c.FormValue("list_id")
+	gameId := c.FormValue("game_id")
+
+	list := dataStore.getList(ctx, listId)
+
+	list.AddGame(gameId)
+
+	dataStore.putList(ctx, listId, list)
+	// var list GameList
+	// list.Name = c.FormValue("list_name")
+	// id := dataStore.addList(ctx, list)
+
+	return c.Redirect(http.StatusSeeOther, "/list/"+listId)
 }

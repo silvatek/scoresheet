@@ -19,4 +19,24 @@
             {{end}}
             </table>
         </div>
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <form id="add_game" method="post" action="/addListGame">
+                    <input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
+                    <input type="hidden" id="list_id" name="list_id" value="{{.Detail.List.ID}}" />
+                    <div class="row">
+                        <label for="game_id" class="col-4 formlabel">Game ID:</label>
+                        <div class="col-8">
+                            <input type="text" id="game_id" name="game_id" size="12">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 formlabel">&nbsp;</div>
+                        <div class="col-8">
+                            <input type="submit" value="Add game">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 {{end}}

@@ -1,0 +1,12 @@
+{{define "content"}}
+		<form method="POST" action="/addList">
+			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
+
+			<label for="list_name" class="formlabel">List name:</label>
+			<input type="text" autofocus="true" id="list_name" name="list_name"><br>
+
+			<br>
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="Submit">
+		</form>
+{{end}}

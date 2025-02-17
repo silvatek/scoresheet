@@ -23,7 +23,7 @@ func TestHomePage(t *testing.T) {
 	homePage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmHtmlIncludes("#intro", "Use this site to record details of UK recreational ice hockey games.")
+	wt.confirmHtmlIncludes("#intro", "The Ice Hockey Scoresheet web application is designed to help score keepers")
 }
 
 func TestGamePage(t *testing.T) {
@@ -70,7 +70,7 @@ func TestGameRedirect(t *testing.T) {
 	wt := webTest(t)
 	wt.setQuery("game_id", "xyz")
 
-	gameRedirect(wt.ec)
+	codeRedirect(wt.ec)
 
 	wt.confirmRedirect("/game/XYZ")
 }
