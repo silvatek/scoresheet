@@ -1,0 +1,13 @@
+{{define "content"}}
+		<div>			
+			<h1><img src="/static/logo.svg" class="h1image"/>Share {{.Detail.Type}} {{.Detail.Code}}</h1>
+		</div>
+		<div>
+			<span id="prompt">This {{.Detail.Type}} can be accessed at</span>
+			<br>
+			<a href="{{.Detail.Url}}">
+				<span id="linkurl">{{.Detail.Encoded}}</span>
+			</a>
+		</div>
+		<img src="/qrcode?type={{.Detail.Type}}&code={{.Detail.Code}}">
+{{end}}

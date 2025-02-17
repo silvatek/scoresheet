@@ -213,11 +213,12 @@ func TestDeleteEventPost(t *testing.T) {
 
 func TestShareGamePage(t *testing.T) {
 	wt := webTest(t)
-	wt.setQuery("game", "SHARE-CODE")
+	wt.setQuery("type", "game")
+	wt.setQuery("code", "SHARE-CODE")
 	defer wt.showBodyOnFail()
 
-	shareGame(wt.ec)
+	shareLink(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmHtmlIncludes("#gameurl", "SHARE-CODE")
+	wt.confirmHtmlIncludes("#linkurl", "SHARE-CODE")
 }

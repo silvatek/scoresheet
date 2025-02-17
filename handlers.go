@@ -53,7 +53,8 @@ func addRoutes(e *echo.Echo) {
 	e.GET("/games", codeRedirect)
 	e.GET("/lists", codeRedirect)
 	e.GET("/game/:id", gamePage)
-	e.GET("/sharegame", shareGame)
+	e.GET("/sharegame", shareLink)
+	e.GET("/share", shareLink)
 	e.GET("/qrcode", qrCodeGenerator)
 	e.GET("/newEvent", newEventPage)
 	e.POST("/addEvent", addEventPost)
@@ -499,7 +500,7 @@ func unlockGamePost(c echo.Context) error {
 	return c.Redirect(http.StatusSeeOther, "/game/"+gameId+errorSuffix)
 }
 
-func gameUrl(gameId string, r *http.Request) string {
+func itemUrl(path string, r *http.Request) string {
 	schemeHeader, ok := r.Header["X-Forwarded-Proto"]
 	var scheme string
 	if ok {
@@ -507,32 +508,49 @@ func gameUrl(gameId string, r *http.Request) string {
 	} else {
 		scheme = strings.ToLower(strings.Split(r.Proto, "/")[0])
 	}
-	return scheme + "://" + r.Host + "/game/" + gameId
+	return scheme + "://" + r.Host + path
 }
 
-func shareGame(c echo.Context) error {
-	gameId := c.QueryParam("game")
+type ShareInfo struct {
+	Url     string
+	Title   string
+	Encoded string
+	Type    string
+	Code    string
+}
 
-	gameUrl := gameUrl(gameId, c.Request())
+func shareLink(c echo.Context) error {
+	itemType := c.QueryParam("type")
+	itemCode := c.QueryParam("code")
+
+	itemUrl := itemUrl("/"+itemType+"/"+itemCode, c.Request())
+
+	share := ShareInfo{
+		Type:    itemType,
+		Code:    itemCode,
+		Url:     itemUrl,
+		Encoded: html.EscapeString(itemUrl),
+	}
 
 	var data pageData
-	data.GameID = gameId
-	data.GameURL = gameUrl
-	data.Encoded = html.EscapeString(gameUrl)
+	data.GameID = itemCode
+	data.GameURL = itemUrl
+	data.Detail = share
 
-	return c.Render(http.StatusOK, "sharegame", data)
+	return c.Render(http.StatusOK, "sharelink", data)
 }
 
 func qrCodeGenerator(c echo.Context) error {
-	gameId := c.QueryParam("game")
+	itemType := c.QueryParam("type")
+	itemCode := c.QueryParam("code")
 
-	gameUrl := gameUrl(gameId, c.Request())
+	url := itemUrl("/"+itemType+"/"+itemCode, c.Request())
 
 	headers := c.Response().Header()
 	headers.Add("Content-Type", "image/png")
 	c.Response().WriteHeader(http.StatusOK)
 
-	q, _ := qrcode.New(gameUrl, qrcode.High)
+	q, _ := qrcode.New(url, qrcode.High)
 	return q.Write(320, c.Response())
 }
 
