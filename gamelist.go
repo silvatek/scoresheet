@@ -1,6 +1,7 @@
 package main
 
 type GameList struct {
+	ID         string
 	Name       string
 	Games      []string
 	LockedWith string

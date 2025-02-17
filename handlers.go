@@ -33,6 +33,7 @@ type pageData struct {
 	Stylesheet  string
 	Csrf        interface{}
 	History     []GameRef
+	Detail      interface{}
 }
 
 type Template struct {
@@ -67,6 +68,7 @@ func addRoutes(e *echo.Echo) {
 	e.GET("/setstyle", styleSet)
 	e.GET("/addPlayer", addPlayerPage)
 	e.POST("/addPlayer", addPlayerPost)
+	e.GET("/list/:id", gameListPage)
 	e.GET("/help", helpPage)
 }
 
@@ -580,4 +582,39 @@ func addPlayerPost(c echo.Context) error {
 func helpPage(c echo.Context) error {
 	var data pageData
 	return c.Render(http.StatusOK, "help", data)
+}
+
+type ListPageData struct {
+	List  GameList
+	Games []Game
+}
+
+func gameListPage(c echo.Context) error {
+	listId := c.Param("id")
+
+	ctx := gctx(c)
+	logs.info1(ctx, "GET for list ID: %s", listId)
+
+	var listData ListPageData
+	listData.List = dataStore.getList(ctx, listId)
+
+	for _, gameId := range listData.List.Games {
+		game := dataStore.getGame(ctx, gameId)
+		listData.Games = append(listData.Games, game)
+	}
+
+	var data pageData
+	data.Detail = listData
+	data.PageHeading = listData.List.Name
+
+	if listData.List.ID != listId {
+		return showErrorPage(fmt.Sprintf("List not found: %s", listId), c)
+	}
+
+	errorCode := c.QueryParam("e")
+	if errorCode != "" {
+		data.Error = errorMessage(errorCode)
+	}
+
+	return c.Render(http.StatusOK, "gamelist", data)
 }

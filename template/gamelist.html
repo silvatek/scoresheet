@@ -1,0 +1,22 @@
+{{define "content"}}
+		<h1>{{.PageHeading}}</h1>
+
+		<div class="error">
+			{{.Error}}
+		</div>
+
+        <div class="row">
+            <table id="home_roster" class="summary-table">
+            {{range $game := .Detail.Games}} 
+                <tr>
+                    <td>
+                        <a href="/game/{{$game.ID}}">{{$game.ID}}</a>
+                    </td>
+                    <td class="textvalue">
+                        {{$game.Title}}
+                    </td>
+                </tr>
+            {{end}}
+            </table>
+        </div>
+{{end}}

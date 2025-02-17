@@ -152,14 +152,14 @@
 						<table id="home_roster" class="summary-table">
 							<tr>
 								<th>Number</th>
-								<th>Player Name</th>
+								<th class="textvalue">Player Name</th>
 							</tr>
 						{{range $player, $name := .Game.HomePlayers}} 
 							<tr>
 								<td>
 									{{$player}}
 								</td>
-								<td>
+								<td class="textvalue">
 									{{$name}}
 								</td>
 							</tr>
@@ -171,14 +171,14 @@
 						<table id="away_roster" class="summary-table">
 							<tr>
 								<th>Number</th>
-								<th>Player Name</th>
+								<th class="textvalue">Player Name</th>
 							</tr>
 						{{range $player, $name := .Game.AwayPlayers}} 
 							<tr>
 								<td>
 									{{$player}}
 								</td>
-								<td>
+								<td class="textvalue">
 									{{$name}}
 								</td>
 							</tr>
