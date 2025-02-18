@@ -78,6 +78,7 @@ func addRoutes(e *echo.Echo) {
 	e.POST("/lock", lockItemPost)
 	e.GET("/help", helpPage)
 	e.GET("/cookies", cookiePage)
+	e.GET("/privacy", privacyPage)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -670,6 +671,10 @@ func helpPage(c echo.Context) error {
 
 func cookiePage(c echo.Context) error {
 	return c.Render(http.StatusOK, "cookies", nil)
+}
+
+func privacyPage(c echo.Context) error {
+	return c.Render(http.StatusOK, "datapolicy", nil)
 }
 
 type ListPageData struct {
