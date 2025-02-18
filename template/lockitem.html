@@ -1,0 +1,43 @@
+{{define "content"}}
+		<div class="message">
+			<h1>{{.Detail.Action}} {{.Detail.Type}} {{.Detail.Code}}</h1>
+		</div>
+
+		{{if .Detail.Error}}
+			<div class="error" id="error_message">
+				{{.Detail.Error}}
+			</div>
+		{{end}}
+		
+		{{if eq .Detail.Action "Lock"}}
+		<div>
+			Locking an item prevents people from editing it.
+		</div>
+		<div>			
+			You must provide a key phrase that can be used to unlock it later if required.
+			<br>
+			&nbsp;
+		</div>
+		{{else}}
+		<div>			
+			You must provide the unlock key that was used to lock this item.
+			<br>
+			&nbsp;
+		</div>
+		{{end}}
+
+		<form method="POST" action="/lock">
+			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
+			<input type="hidden" name="action" id="action" value="{{.Detail.Action}}">
+			<input type="hidden" name="item_type" id="item_type" value="{{.Detail.Type}}">
+			<input type="hidden" name="item_code" id="item_code" value="{{.Detail.Code}}">
+
+			<label for="unlock_key" class="formlabel">Unlock key:</label>
+			<input type="text" autofocus="true" id="unlock_key" name="unlock_key"><br>
+
+			<br>
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="{{.Detail.Action}} {{.Detail.Type}}">
+		</form>
+
+{{end}}

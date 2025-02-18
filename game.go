@@ -26,6 +26,10 @@ type Linkable interface {
 	LinkCode() string
 }
 
+type Lockable interface {
+	SetLockedWith(key string)
+}
+
 type EventTime string
 
 const GOAL = "Goal"
@@ -70,6 +74,10 @@ type GameSummary struct {
 
 func (game Game) LinkCode() string {
 	return "GAME:" + game.ID
+}
+
+func (game *Game) SetLockedWith(key string) {
+	game.LockedWith = key
 }
 
 func AddEvent(game *Game, event Event) {

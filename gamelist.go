@@ -25,3 +25,7 @@ func (list GameList) IsLocked() bool {
 func (list GameList) LinkCode() string {
 	return "LIST:" + list.ID
 }
+
+func (list *GameList) SetLockedWith(key string) {
+	list.LockedWith = key
+}

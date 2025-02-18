@@ -74,6 +74,8 @@ func addRoutes(e *echo.Echo) {
 	e.GET("/newList", newListPage)
 	e.POST("/addList", addListPost)
 	e.POST("/addListGame", addListGamePost)
+	e.GET("/lock", lockItemPage)
+	e.POST("/lock", lockItemPost)
 	e.GET("/help", helpPage)
 	e.GET("/cookies", cookiePage)
 }
@@ -443,6 +445,66 @@ func deleteEventPost(c echo.Context) error {
 	dataStore.putGame(ctx, gameId, game)
 
 	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
+}
+
+type lockData struct {
+	Type   string
+	Code   string
+	Action string
+	Error  string
+}
+
+func lockItemPage(c echo.Context) error {
+	errorText := ""
+	errorCode := c.QueryParam("error")
+	if errorCode == "1001" {
+		errorText = "Incorrect unlock key"
+	} else if errorCode == "1002" {
+		errorText = "Unlock key must not be empty"
+	}
+	lockdata := lockData{
+		Type:   c.QueryParam("type"),
+		Code:   c.QueryParam("code"),
+		Action: c.QueryParam("action"),
+		Error:  errorText,
+	}
+
+	pageData := pageData{
+		Detail: lockdata,
+	}
+
+	return c.Render(http.StatusOK, "lockitem", pageData)
+}
+
+func lockItemPost(c echo.Context) error {
+	action := strings.ToLower(c.FormValue("action"))
+	itemType := strings.ToLower(c.FormValue("item_type"))
+	itemCode := strings.ToUpper(c.FormValue("item_code"))
+	unlockKey := strings.TrimSpace(c.FormValue("unlock_key"))
+
+	ctx := gctx(c)
+
+	itemUrl := "/"
+
+	if itemType == "list" {
+		list := dataStore.getList(ctx, itemCode)
+
+		if action == "lock" {
+			if unlockKey == "" {
+				return c.Redirect(http.StatusSeeOther, "/lock?error=1002&action=Lock&type=list&code="+itemCode)
+			}
+			list.LockedWith = unlockKey
+		} else if action == "unlock" {
+			if unlockKey != list.LockedWith {
+				return c.Redirect(http.StatusSeeOther, "/lock?error=1001&action=Unlock&type=list&code="+itemCode)
+			}
+			list.LockedWith = ""
+		}
+		dataStore.putList(ctx, itemCode, list)
+		itemUrl = "/list/" + itemCode
+	}
+
+	return c.Redirect(http.StatusSeeOther, itemUrl)
 }
 
 func lockGamePage(c echo.Context) error {

@@ -19,6 +19,7 @@
             {{end}}
             </table>
         </div>
+        {{if not .Detail.List.LockedWith}}
         <div class="row">
             <div class="col-12 col-md-3">
                 <form id="add_game" method="post" action="/addListGame">
@@ -39,12 +40,22 @@
                 </form>
             </div>
         </div>
+        {{end}}
         <div class="controlbar" id="list_control_bar">
             <div>&nbsp;</div>
             <div class="endbutton">
                 <a href="/share?type=list&code={{.Detail.List.ID}}">
                     <button id="btn_share">Share List</button>
                 </a>
+                {{if .Detail.List.LockedWith}}
+                <a href="/lock?type=list&code={{.Detail.List.ID}}&action=Unlock">
+                    <button id="btn_unlock">Unlock List</button>
+                </a>                    
+                {{else}}
+                <a href="/lock?type=list&code={{.Detail.List.ID}}&action=Lock">
+                    <button id="btn_lock">Lock List</button>
+                </a>
+                {{end}}
             </div>
         </div>
 {{end}}
