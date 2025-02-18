@@ -255,5 +255,6 @@ func AddPlayer(game *Game, homeAway string, playerNum int, name string) {
 	} else {
 		return
 	}
-	(*team)[strconv.Itoa(playerNum)] = name
+	playerNumKey := fmt.Sprintf("%02d", playerNum)
+	(*team)[playerNumKey] = strings.TrimSpace(name)
 }
