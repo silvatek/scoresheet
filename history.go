@@ -17,6 +17,9 @@ func GetHistory(ctx context.Context, cookieValue string) []HistoryItem {
 	if cookieValue != "" {
 		ids = strings.Split(cookieValue, " ")
 		for _, id := range ids {
+			if strings.TrimSpace(id) == "" {
+				continue
+			}
 			parts := strings.Split(id, ":")
 			var itemType string
 			if len(parts) == 2 {
