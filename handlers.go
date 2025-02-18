@@ -147,10 +147,14 @@ func setStyleCookie(stylesheetName string, c echo.Context) {
 func homePage(c echo.Context) error {
 	logs.info("Received request: %s", c.Path())
 
+	history := getHistory(c)
+
 	data := pageData{
 		Message: "Ice Hockey Scoresheet",
-		History: getHistory(c),
+		History: history,
 	}
+
+	writeHistoryCookie(HistoryString(history), c)
 
 	return c.Render(http.StatusOK, "index", data)
 }
@@ -262,6 +266,10 @@ func setGameHistoryCookie(newItem string, c echo.Context) {
 
 	logs.debug1(gctx(c), "New game history: %s", history)
 
+	writeHistoryCookie(history, c)
+}
+
+func writeHistoryCookie(history string, c echo.Context) {
 	cookie := http.Cookie{
 		Name:     "gameHistory",
 		Value:    history,

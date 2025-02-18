@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"strings"
 )
 
 type HistoryItem struct {
 	ItemType string
+	ItemCode string
 	Summary  string
 	UrlPath  string
 }
@@ -33,6 +35,7 @@ func GetHistory(ctx context.Context, cookieValue string) []HistoryItem {
 				game := dataStore.getGame(ctx, id)
 				item = HistoryItem{
 					ItemType: itemType,
+					ItemCode: game.ID,
 					Summary:  game.Title,
 					UrlPath:  "/game/" + game.ID,
 				}
@@ -40,6 +43,7 @@ func GetHistory(ctx context.Context, cookieValue string) []HistoryItem {
 				list := dataStore.getList(ctx, id)
 				item = HistoryItem{
 					ItemType: itemType,
+					ItemCode: list.ID,
 					Summary:  list.Name,
 					UrlPath:  "/list/" + list.ID,
 				}
@@ -55,4 +59,12 @@ func GetHistory(ctx context.Context, cookieValue string) []HistoryItem {
 
 func AddToHistory(newValue string, existingList string) string {
 	return newValue + " " + strings.Trim(strings.ReplaceAll(existingList, newValue, " "), " ")
+}
+
+func HistoryString(items []HistoryItem) string {
+	text := ""
+	for _, item := range items {
+		text += fmt.Sprintf("%s:%s ", item.ItemType, item.ItemCode)
+	}
+	return strings.TrimSpace(text)
 }
