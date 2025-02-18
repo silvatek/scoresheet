@@ -25,14 +25,9 @@ func (store GameStore) putGame(ctx context.Context, id string, game Game) {
 }
 
 func (store GameStore) addGame(ctx context.Context, game Game) string {
-	id := randomId()
-	// keep generating IDs until we get an unused one
-	// for ok := true; ok; ok = store.datastore.Contains(id) {
-	// 	id = randomId()
-	// }
-	game.ID = id
-	store.putGame(ctx, id, game)
-	return id
+	game.ID = store.getUniqueCode(ctx, GAMES_COLLECTION)
+	store.putGame(ctx, game.ID, game)
+	return game.ID
 }
 
 func (store GameStore) putList(ctx context.Context, id string, list GameList) {
@@ -46,10 +41,19 @@ func (store GameStore) getList(ctx context.Context, id string) GameList {
 }
 
 func (store GameStore) addList(ctx context.Context, list GameList) string {
-	id := randomId()
-	list.ID = id
-	store.putList(ctx, id, list)
-	return id
+	list.ID = store.getUniqueCode(ctx, LISTS_COLLECTION)
+	store.putList(ctx, list.ID, list)
+	return list.ID
+}
+
+// Returns a code that is unique as an identifier within the specified collection.
+func (store GameStore) getUniqueCode(ctx context.Context, collection string) string {
+	for {
+		id := randomId()
+		if !store.datastore.Exists(ctx, collection, id) {
+			return id
+		}
+	}
 }
 
 func (store GameStore) summary() string {
@@ -74,6 +78,7 @@ type DataStore interface {
 	close()
 	Get(ctx context.Context, collection string, id string, item interface{}) interface{}
 	Put(ctx context.Context, collection string, id string, item interface{})
+	Exists(ctx context.Context, collection string, id string) bool
 	isEmpty() bool
 }
 
@@ -101,6 +106,11 @@ func (store *TestDataStore) Get(ctx context.Context, collection string, id strin
 	return item
 }
 
+func (store *TestDataStore) Exists(ctx context.Context, collection string, id string) bool {
+	_, found := store.items[collection][id]
+	return found
+}
+
 func (store *TestDataStore) Put(ctx context.Context, collection string, id string, item interface{}) {
 	data, _ := json.Marshal(item)
 	store.items[collection][id] = data
@@ -112,13 +122,20 @@ func (store *TestDataStore) isEmpty() bool {
 	return len(store.items[GAMES_COLLECTION]) == 0
 }
 
+const RANDOM_1_BASE = 0x1000
+const RANDOM_1_MAX = 0xEFFF
+const RANDOM_2_MAX = 0xFFFF
+const RANDOM_ID_LENGTH = 9
+
+// Returns a randomly-generated identifier consisting of 4 hex digits, a dash, then 4 more digits.
+// The first digit will not be a 0, so there are actually only about 2 billion possibilities.
 func randomId() string {
-	return fmt.Sprintf("%04X-%04X", rand.Intn(0xFFFF), rand.Intn(0xFFFF))
+	return fmt.Sprintf("%04X-%04X", RANDOM_1_BASE+rand.Intn(RANDOM_1_MAX), rand.Intn(RANDOM_2_MAX))
 }
 
-const TEST_ID_1 = "CODE1"
-const TEST_ID_2 = "CODE2"
-const TEST_LIST_ID = "LIST1"
+const TEST_ID_1 = "GAME-0001"
+const TEST_ID_2 = "GAME-0002"
+const TEST_LIST_ID = "LIST-0001"
 
 func testGame1() Game {
 	game1 := Game{

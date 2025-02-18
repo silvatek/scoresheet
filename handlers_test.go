@@ -28,7 +28,7 @@ func TestHomePage(t *testing.T) {
 
 func TestGamePage(t *testing.T) {
 	wt := webTest(t)
-	wt.setParam("id", "CODE1")
+	wt.setParam("id", TEST_ID_1)
 	defer wt.showBodyOnFail()
 
 	dataStore = GameStore{datastore: testDataStore()}
@@ -136,13 +136,13 @@ func TestLockGamePage(t *testing.T) {
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
-	wt.setQuery("game", "CODE1")
+	wt.setQuery("game", TEST_ID_1)
 	wt.showBodyOnFail()
 
 	lockGamePage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmHtmlIncludes("h1", "Lock Game CODE1")
+	wt.confirmHtmlIncludes("h1", "Lock Game "+TEST_ID_1)
 }
 
 func TestLockGamePost(t *testing.T) {
@@ -150,11 +150,11 @@ func TestLockGamePost(t *testing.T) {
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
-	wt.post("game_id=CODE1&unlock_key=testing")
+	wt.post("game_id=" + TEST_ID_1 + "&unlock_key=testing")
 
 	lockGamePost(wt.ec)
 
-	wt.confirmRedirect("/game/CODE1")
+	wt.confirmRedirect("/game/" + TEST_ID_1)
 }
 
 func TestUnlockGamePage(t *testing.T) {
@@ -162,14 +162,14 @@ func TestUnlockGamePage(t *testing.T) {
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
-	wt.setQuery("game", "CODE1")
+	wt.setQuery("game", TEST_ID_1)
 	wt.showBodyOnFail()
 
 	unlockGamePage(wt.ec)
 
 	wt.confirmSuccessResponse()
 
-	wt.confirmHtmlIncludes("h1", "Unlock Game CODE1")
+	wt.confirmHtmlIncludes("h1", "Unlock Game "+TEST_ID_1)
 }
 
 func TestUnlockGamePost(t *testing.T) {
@@ -178,11 +178,11 @@ func TestUnlockGamePost(t *testing.T) {
 	dataStore.putGame(context.Background(), game.ID, game)
 
 	wt := webTest(t)
-	wt.post("game_id=CODE2&unlock_key=secret123")
+	wt.post("game_id=" + TEST_ID_2 + "&unlock_key=secret123")
 
 	unlockGamePost(wt.ec)
 
-	wt.confirmRedirect("/game/CODE2")
+	wt.confirmRedirect("/game/" + TEST_ID_2)
 }
 
 func TestDeleteEventPage(t *testing.T) {
@@ -190,13 +190,13 @@ func TestDeleteEventPage(t *testing.T) {
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
-	wt.setQuery("game", "CODE1")
+	wt.setQuery("game", TEST_ID_1)
 	defer wt.showBodyOnFail()
 
 	deleteEventPage(wt.ec)
 
 	wt.confirmSuccessResponse()
-	wt.confirmHtmlIncludes("h1", "Delete event for game CODE1")
+	wt.confirmHtmlIncludes("h1", "Delete event for game "+TEST_ID_1)
 }
 
 func TestDeleteEventPost(t *testing.T) {
@@ -204,11 +204,11 @@ func TestDeleteEventPost(t *testing.T) {
 	setupDataStore(dataStore)
 
 	wt := webTest(t)
-	wt.post("game_id=CODE1&event_summary=01:30 Home Goal")
+	wt.post("game_id=" + TEST_ID_1 + "&event_summary=01:30 Home Goal")
 
 	deleteEventPost(wt.ec)
 
-	wt.confirmRedirect("/game/CODE1")
+	wt.confirmRedirect("/game/" + TEST_ID_1)
 }
 
 func TestShareGamePage(t *testing.T) {
