@@ -1,0 +1,34 @@
+{{define "content"}}
+		<div class="message">
+			<h1>Delete {{.ItemType}} {{.ItemCode}}</h1>
+		</div>
+
+		{{if .Error}}
+			<div class="error" id="error_message">
+				{{.Error}}
+			</div>
+		{{end}}
+		
+		<div class="warning">
+			WARNING - If you delete a {{.ItemType}} it CANNOT be recovered.
+		</div>
+		<div>			
+			Please retype the ID to confirm that this is what you want to do, or click back to leave as-is.
+			<br>
+			&nbsp;
+		</div>
+
+		<form method="POST" action="/delete">
+			<input type="hidden" id="_csrf" name="_csrf" value="{{.Csrf}}" />
+			<input type="hidden" name="item_type" id="item_type" value="{{.ItemType}}">
+			<input type="hidden" name="item_code" id="item_code" value="{{.ItemCode}}">
+
+			<label for="confirm_code" class="formlabel">Item to delete:</label>
+			<input type="text" autofocus="true" id="confirm_code" name="confirm_code"><br>
+
+			<br>
+			<div class="formlabel">&nbsp;</div>
+			<input type="submit" value="Delete {{.ItemType}}">
+		</form>
+
+{{end}}

@@ -31,6 +31,8 @@ type pageData struct {
 	EventHA     string
 	PageHeading string
 	Stylesheet  string
+	ItemType    string
+	ItemCode    string
 	Csrf        interface{}
 	History     []HistoryItem
 	Detail      interface{}
@@ -76,6 +78,9 @@ func addRoutes(e *echo.Echo) {
 	e.POST("/addListGame", addListGamePost)
 	e.GET("/lock", lockItemPage)
 	e.POST("/lock", lockItemPost)
+	e.GET("/delete", deleteItemPage)
+	e.POST("/delete", deleteItemPost)
+	e.GET("/deleted", deletedItemPage)
 	e.GET("/help", helpPage)
 	e.GET("/cookies", cookiePage)
 	e.GET("/privacy", privacyPage)
@@ -715,8 +720,7 @@ func gameListPage(c echo.Context) error {
 }
 
 func newListPage(c echo.Context) error {
-	var data pageData
-	return c.Render(http.StatusOK, "newlist", data)
+	return c.Render(http.StatusOK, "newlist", nil)
 }
 
 func addListPost(c echo.Context) error {
@@ -740,9 +744,39 @@ func addListGamePost(c echo.Context) error {
 	list.AddGame(gameId)
 
 	dataStore.putList(ctx, listId, list)
-	// var list GameList
-	// list.Name = c.FormValue("list_name")
-	// id := dataStore.addList(ctx, list)
 
 	return c.Redirect(http.StatusSeeOther, "/list/"+listId)
+}
+
+func deleteItemPage(c echo.Context) error {
+	var data pageData
+	data.ItemType = c.QueryParam("type")
+	data.ItemCode = c.QueryParam("code")
+
+	return c.Render(http.StatusOK, "deleteitem", data)
+}
+
+// Deletes an item, but only if deleteCode matches itemCode.
+func deleteItemPost(c echo.Context) error {
+	itemCode := c.FormValue("item_code")
+	itemType := c.FormValue("item_type")
+	confirmCode := strings.ToUpper(strings.TrimSpace(c.FormValue("confirm_code")))
+
+	if itemCode != confirmCode {
+		return echo.NewHTTPError(http.StatusBadRequest, "Code does not match")
+	}
+
+	logs.info("Deleting %s %s at user's request", itemType, confirmCode)
+
+	dataStore.deleteItem(gctx(c), itemType, confirmCode)
+
+	return c.Redirect(http.StatusSeeOther, "/deleted?type="+itemType+"&code="+confirmCode)
+}
+
+func deletedItemPage(c echo.Context) error {
+	var data pageData
+	data.ItemType = c.QueryParam("type")
+	data.ItemCode = c.QueryParam("code")
+
+	return c.Render(http.StatusOK, "deleted", data)
 }

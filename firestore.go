@@ -85,3 +85,7 @@ func (store FireDataStore) Exists(ctx context.Context, collection string, id str
 	doc, err := store.Client.Doc(collection + "/" + id).Get(ctx)
 	return err == nil && doc.Exists()
 }
+
+func (store FireDataStore) Delete(ctx context.Context, collection string, id string) {
+	store.Client.Doc(collection + "/" + id).Delete(ctx)
+}

@@ -52,6 +52,9 @@
                     <button id="btn_unlock">Unlock List</button>
                 </a>                    
                 {{else}}
+                <a href="/delete?type=list&code={{.Detail.List.ID}}">
+                    <button id="btn_delete">Delete List</button>
+                </a>
                 <a href="/lock?type=list&code={{.Detail.List.ID}}&action=Lock">
                     <button id="btn_lock">Lock List</button>
                 </a>

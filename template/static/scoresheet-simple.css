@@ -229,6 +229,11 @@ table {
 	color: red;
 }
 
+.warning {
+	font-weight: bold;
+	color: brown;
+}
+
 .concept {
 	font-style: italic;
 	font-weight: bold;

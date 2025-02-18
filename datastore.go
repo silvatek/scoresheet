@@ -14,6 +14,11 @@ type GameStore struct {
 const GAMES_COLLECTION = "Games"
 const LISTS_COLLECTION = "Lists"
 
+var Collections = map[string]string{
+	"game": GAMES_COLLECTION,
+	"list": LISTS_COLLECTION,
+}
+
 func (store GameStore) getGame(ctx context.Context, id string) Game {
 	var game Game
 	store.datastore.Get(ctx, GAMES_COLLECTION, id, &game)
@@ -44,6 +49,10 @@ func (store GameStore) addList(ctx context.Context, list GameList) string {
 	list.ID = store.getUniqueCode(ctx, LISTS_COLLECTION)
 	store.putList(ctx, list.ID, list)
 	return list.ID
+}
+
+func (store GameStore) deleteItem(ctx context.Context, itemType string, id string) {
+	store.datastore.Delete(ctx, Collections[itemType], id)
 }
 
 // Returns a code that is unique as an identifier within the specified collection.
@@ -78,6 +87,7 @@ type DataStore interface {
 	close()
 	Get(ctx context.Context, collection string, id string, item interface{}) interface{}
 	Put(ctx context.Context, collection string, id string, item interface{})
+	Delete(ctx context.Context, collection string, id string)
 	Exists(ctx context.Context, collection string, id string) bool
 	isEmpty() bool
 }
@@ -114,6 +124,10 @@ func (store *TestDataStore) Exists(ctx context.Context, collection string, id st
 func (store *TestDataStore) Put(ctx context.Context, collection string, id string, item interface{}) {
 	data, _ := json.Marshal(item)
 	store.items[collection][id] = data
+}
+
+func (store *TestDataStore) Delete(ctx context.Context, collection string, id string) {
+	delete(store.items[collection], id)
 }
 
 func (store *TestDataStore) open()  {}
