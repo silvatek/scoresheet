@@ -177,6 +177,12 @@ code {
 	float: left;
 }
 
+.endlink {
+	float: right;
+	text-align: right;
+	margin-left: 1em;
+}
+
 input[type=button], input[type=submit], input[type=reset], .endbutton button {
 	border-radius: 6px;
 	margin-top: 4px;
