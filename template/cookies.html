@@ -1,0 +1,29 @@
+{{define "content"}}
+    <h2>Overview</h2>
+    <div class="maintext">
+        The scoresheet web application uses a minimal set of cookies to make the site functional.
+        We only use &quot;first-party&quot; cookies, which cannot be used to track you across multiple sites.
+    </div>
+    <div class="maintext">
+        More information about cookies in general, and the EU restrictions on their use,
+        is available at <a href="https://gdpr.eu/cookies/">https://gdpr.eu/cookies/</a>
+    </div>
+    <h4>Cookie Details</h4>
+    <dl>
+        <dt>_csrf</dt>
+        <dd>
+            These cookies are used to prevent Cross-Site Request Forgery attacks, where another website you visit tries
+            to submit data to this one without your knowledge. There may be multiple _csrf cookies.
+        </dd>
+        <dt>gameHistory</dt>
+        <dd>
+            The game history cookie is used to store references to the games and lists that you have accessed recently,
+            allowing you to quickly return to those items.
+        </dd>
+        <dt>scoresheetStyle</dt>
+        <dd>
+            We may occasionally experiment with different visual styling options for the website, and the scoresheetStyle
+            cookie is used to capture which style should be used.
+        </dd>
+    </dl>
+{{end}}

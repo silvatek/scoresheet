@@ -75,6 +75,7 @@ func addRoutes(e *echo.Echo) {
 	e.POST("/addList", addListPost)
 	e.POST("/addListGame", addListGamePost)
 	e.GET("/help", helpPage)
+	e.GET("/cookies", cookiePage)
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -86,6 +87,10 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 	if err != nil {
 		logs.error("Error parsing template: %+v", err)
 		os.Exit(-2)
+	}
+
+	if data == nil {
+		data = pageData{}
 	}
 
 	data1, ok := data.(pageData)
@@ -255,6 +260,7 @@ func setGameHistoryCookie(newItem string, c echo.Context) {
 		Path:     "/",
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
+		MaxAge:   365 * 24 * 60 * 60, // 1 year
 	}
 
 	c.SetCookie(&cookie)
@@ -597,8 +603,11 @@ func addPlayerPost(c echo.Context) error {
 }
 
 func helpPage(c echo.Context) error {
-	var data pageData
-	return c.Render(http.StatusOK, "help", data)
+	return c.Render(http.StatusOK, "help", nil)
+}
+
+func cookiePage(c echo.Context) error {
+	return c.Render(http.StatusOK, "cookies", nil)
 }
 
 type ListPageData struct {
