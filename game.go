@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
@@ -38,6 +39,7 @@ const HOME = "Home"
 const AWAY = "Away"
 
 type Event struct {
+	ID        string
 	ClockTime EventTime
 	GameTime  EventTime
 	Period    int    `form:"period"`
@@ -88,8 +90,13 @@ func AddEvent(game *Game, event Event) {
 	}
 }
 
+func randomEventId() string {
+	return fmt.Sprintf("%06X", rand.Intn(0xFFFFFF))
+}
+
 func AddGoal(game *Game, period int, clockTime EventTime, homeAway string, player int, assist1 int, assist2 int, category string) {
 	goal := Event{
+		ID:        randomEventId(),
 		Period:    period,
 		ClockTime: clockTime,
 		EventType: GOAL,
@@ -109,6 +116,7 @@ func AddGoal(game *Game, period int, clockTime EventTime, homeAway string, playe
 
 func AddPenalty(game *Game, period int, clockTime EventTime, homeAway string, player int, minutes int, category string) {
 	penalty := Event{
+		ID:        randomEventId(),
 		Period:    period,
 		ClockTime: clockTime,
 		EventType: PENALTY,

@@ -205,6 +205,10 @@ td.textvalue, th.textvalue {
 	padding-left: 1em;
 }
 
+.hidden {
+	visibility: hidden;
+}
+
 .summary-table th.hidden {
 	visibility: hidden;
 	border: none;

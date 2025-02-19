@@ -33,8 +33,9 @@
 						{{if $event.Minutes}}
 							{{$event.Minutes}} minutes
 						{{else}}
-							<td>&nbsp;</td>
+							&nbsp;
 						{{end}}
+						<span class="hidden">{{$event.ID}}</span>							
 					</div>
 				</div>
 				{{end}}
