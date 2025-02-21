@@ -120,7 +120,7 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 		data = data1
 	}
 
-	setContentSecurityPolicy(c)
+	setSecurityHeaders(c)
 
 	if err := t.ExecuteTemplate(w, "base", data); err != nil {
 		//msg := http.StatusText(http.StatusInternalServerError)
@@ -131,12 +131,13 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 	return err
 }
 
-func setContentSecurityPolicy(c echo.Context) {
+func setSecurityHeaders(c echo.Context) {
 	c.Response().Header().Set("Content-Security-Policy", "default-src 'self'; "+
 		"img-src 'self' cdn.jsdelivr.net/; "+
 		"script-src 'self' cdn.jsdelivr.net/; "+
 		"style-src 'self' cdn.jsdelivr.net/; ",
 	)
+	c.Response().Header().Set("Cross-Origin-Opener-Policy", "same-origin")
 }
 
 func getStyleCookie(c echo.Context) (*http.Cookie, error) {
