@@ -149,6 +149,7 @@
 								<th class="textvalue">Player Name</th>
 							</tr>
 						{{range $player, $name := .Game.HomePlayers}} 
+							{{if $name}}
 							<tr>
 								<td>
 									{{$player}}
@@ -157,6 +158,7 @@
 									{{$name}}
 								</td>
 							</tr>
+							{{end}}
 						{{end}}
 						</table>
 					</div>
