@@ -170,15 +170,30 @@ code {
 
 .controlbar {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: flex-start;
-  	justify-content: space-between;
+  	align-content: flex-start;
 	overflow: auto;
+	gap: 8px;
+	width: 100%;
 	/* clear: both; */
 }
 
+.startbutton {
+	/* margin-right: 4px; */
+	display: inline-block;
+	flex-grow: 0;
+}
+
 .endbutton {
-	float: right;
-	margin-left: 4px;
+	align-self: flex-end;
+	/* margin-left: 4px; */
+	display: inline-block;
+	flex-grow: 0;
+}
+
+.buttonspacer {
+	flex-grow: 1;
 }
 
 .leftlink {
@@ -191,7 +206,7 @@ code {
 	margin-left: 1em;
 }
 
-input[type=button], input[type=submit], input[type=reset], .endbutton {
+input[type=button], input[type=submit], input[type=reset], .endbutton, .startbutton {
 	border-radius: 6px;
 	margin-top: 4px;
 	padding: 4px 8px 4px;
@@ -200,7 +215,7 @@ input[type=button], input[type=submit], input[type=reset], .endbutton {
 	background-color: var(--panel-bg-color);
 }
 
-input[type=submit]:hover, .endbutton:hover {
+input[type=submit]:hover, .endbutton:hover, .startbutton:hover {
 	border-color: var(--panel-edge-color);
 	border-style: solid;
 	text-decoration: underline;

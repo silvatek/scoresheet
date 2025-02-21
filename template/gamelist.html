@@ -42,15 +42,14 @@
         </div>
         {{end}}
         <div class="controlbar" id="list_control_bar">
-            <div>&nbsp;</div>
-            <div>
-                <a href="/share?type=list&code={{.Detail.List.ID}}" class="endbutton" id="btn_share">Share List</a>
-                {{if .Detail.List.LockedWith}}
-                <a href="/lock?type=list&code={{.Detail.List.ID}}&action=Unlock" class="endbutton" id="btn_unlock">Unlock List</a>
-                {{else}}
-                <a href="/delete?type=list&code={{.Detail.List.ID}}" class="endbutton" id="btn_delete">Delete List</a>
-                <a href="/lock?type=list&code={{.Detail.List.ID}}&action=Lock" class="endbutton" id="btn_lock">Lock List</a>
-                {{end}}
-            </div>
+            <div class="buttonspacer">&nbsp;</div>
+            
+            <a href="/share?type=list&code={{.Detail.List.ID}}" class="endbutton" id="btn_share">Share List</a>
+            {{if .Detail.List.LockedWith}}
+            <a href="/lock?type=list&code={{.Detail.List.ID}}&action=Unlock" class="endbutton" id="btn_unlock">Unlock List</a>
+            {{else}}
+            <a href="/delete?type=list&code={{.Detail.List.ID}}" class="endbutton" id="btn_delete">Delete List</a>
+            <a href="/lock?type=list&code={{.Detail.List.ID}}&action=Lock" class="endbutton" id="btn_lock">Lock List</a>
+            {{end}}
         </div>
 {{end}}
