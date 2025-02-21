@@ -120,6 +120,8 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 		data = data1
 	}
 
+	setContentSecurityPolicy(c)
+
 	if err := t.ExecuteTemplate(w, "base", data); err != nil {
 		//msg := http.StatusText(http.StatusInternalServerError)
 		logs.error("template.Execute: %v", err)
@@ -127,6 +129,14 @@ func showTemplatePage(templateName string, data any, w io.Writer, c echo.Context
 	}
 
 	return err
+}
+
+func setContentSecurityPolicy(c echo.Context) {
+	c.Response().Header().Set("Content-Security-Policy", "default-src 'self'; "+
+		"img-src 'self' cdn.jsdelivr.net/; "+
+		"script-src 'self' cdn.jsdelivr.net/; "+
+		"style-src 'self' cdn.jsdelivr.net/; ",
+	)
 }
 
 func getStyleCookie(c echo.Context) (*http.Cookie, error) {
