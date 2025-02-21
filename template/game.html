@@ -194,10 +194,12 @@
 				</div>
 			</div>
 			<div class="controlbar" id="game_control_bar">
-				<a href="/addPlayer?game={{.Game.ID}}" class="startbutton" id="btn_add_player">Add player</a>
+				{{if not .Game.LockedWith}}
+					<a href="/addPlayer?game={{.Game.ID}}" class="startbutton" id="btn_add_player">Add player</a>
+				{{end}}
 
 				<div class="buttonspacer">&nbsp;</div>
-				
+
 				<a href="/share?type=game&code={{.Game.ID}}" class="endbutton" id="btn_share">Share Game</a>
 				{{if .Game.LockedWith}}
 				<a href="/unlockGame?game={{.Game.ID}}" class="endbutton" id="btn_unlock">Unlock Game</a>
