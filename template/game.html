@@ -143,43 +143,51 @@
 				<div class="row">
 					<div class="col-sm-12 col-lg-6">
 						<h4>Home Team Roster</h4>
-						<table id="home_roster" class="summary-table">
-							<tr>
-								<th>Number</th>
-								<th class="textvalue">Player Name</th>
-							</tr>
-						{{range $player, $name := .Game.HomePlayers}} 
-							{{if $name}}
-							<tr>
-								<td>
-									{{$player}}
-								</td>
-								<td class="textvalue">
-									{{$name}}
-								</td>
-							</tr>
+						{{if .Game.HomePlayers}}
+							<table id="home_roster" class="summary-table">
+								<tr>
+									<th>Number</th>
+									<th class="textvalue">Player Name</th>
+								</tr>
+							{{range $player, $name := .Game.HomePlayers}} 
+								{{if $name}}
+								<tr>
+									<td>
+										{{$player}}
+									</td>
+									<td class="textvalue">
+										{{$name}}
+									</td>
+								</tr>
+								{{end}}
 							{{end}}
+							</table>
+						{{else}}
+							<div>No home team roster recorded.</div>
 						{{end}}
-						</table>
 					</div>
 					<div class="col-sm-12 col-lg-6">
 						<h4>Away Team Roster</h4>
-						<table id="away_roster" class="summary-table">
-							<tr>
-								<th>Number</th>
-								<th class="textvalue">Player Name</th>
-							</tr>
-						{{range $player, $name := .Game.AwayPlayers}} 
-							<tr>
-								<td>
-									{{$player}}
-								</td>
-								<td class="textvalue">
-									{{$name}}
-								</td>
-							</tr>
+						{{if .Game.AwayPlayers}}
+							<table id="away_roster" class="summary-table">
+								<tr>
+									<th>Number</th>
+									<th class="textvalue">Player Name</th>
+								</tr>
+							{{range $player, $name := .Game.AwayPlayers}} 
+								<tr>
+									<td>
+										{{$player}}
+									</td>
+									<td class="textvalue">
+										{{$name}}
+									</td>
+								</tr>
+							{{end}}
+							</table>
+						{{else}}
+							<div>No away team roster recorded.</div>
 						{{end}}
-						</table>
 					</div>
 				</div>
 			</div>
