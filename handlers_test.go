@@ -222,3 +222,15 @@ func TestShareGamePage(t *testing.T) {
 	wt.confirmSuccessResponse()
 	wt.confirmHtmlIncludes("#linkurl", "SHARE-CODE")
 }
+
+func TestContentSecurityPolicy(t *testing.T) {
+	wt := webTest(t)
+	defer wt.showBodyOnFail()
+
+	homePage(wt.ec)
+
+	wt.confirmSuccessResponse()
+	if wt.resp.Header().Get("Content-Security-Policy") == "" {
+		t.Error("No content security policy found in response")
+	}
+}
