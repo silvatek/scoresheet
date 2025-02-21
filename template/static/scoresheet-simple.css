@@ -1,13 +1,21 @@
+:root {
+	--main-bg-color: rgb(183, 206,217);
+	--title-color: rgb(63,126,145);
+	--panel-bg-color: rgb(221, 229, 233);
+	--panel-edge-color: rgb(193,218,230);
+	--action-text-color: rgb(47, 92, 104);
+	--text-font: Futura, Arial, sans-serif;
+}
 /*
 	background: rgb(183, 206,217)
 	titles: rgb(63,126,145)
 	borders: rgb(193,218,230)
 */
 body {
-	font-family: Futura, Arial, sans-serif;
+	font-family: var(--text-font);
 	font-display: fallback;	
 	background: url('/static/simple/background-2.jpg');
-	background-color: rgb(183, 206,217);
+	background-color: var(--main-bg-color);
 	background-size: cover;
 	background-position: center top;
 	line-height: 1.6;	
@@ -17,7 +25,7 @@ body {
 	margin-top: 0;
 	display: flex;
 	width: 100%;
-	background-color: rgb(193,218,230);	
+	background-color: var(--panel-edge-color);
  }
 
  .titlelogo {
@@ -31,7 +39,7 @@ body {
 	font-family: Futura, Arial, sans-serif;
 	font-weight: bold;
 	font-size: 16pt;
-	color: rgb(63,126,145);
+	color: var(--title-color);
 	padding-top: 8px;
 	padding-left: 1em;
  }
@@ -47,9 +55,9 @@ h3 {
 	text-transform: uppercase;
 	font-weight: bold;
 	font-size: 14pt;
-	/* color: rgb(63,126,145); */	
-	color: black;
-	border-bottom: double 6px rgb(63,126,145);
+	color: var(--action-text-color);
+	/* color: black; */
+	border-bottom: double 6px var(--title-color);
 	padding-top: 4pt;
 }
 
@@ -59,7 +67,7 @@ h4 {
 	text-transform: uppercase;
 	font-weight: bold;
 	font-size: 14pt;
-	color: rgb(63,126,145);
+	color: var(--title-color);
 	padding-top: 8pt;
 	border-bottom: solid 6px;
 	border-color: white;
@@ -96,8 +104,7 @@ h4 {
  }
 
  .eventrow {
-	/* background-color: #1967d217; */
-	background-color: rgba(193,218,230,0.5);
+	background-color: var(--panel-bg-color);
 	margin: 2px;
 	border-radius: 8px;	
  }
@@ -115,6 +122,7 @@ h4 {
 }
 
 a {
+	color: var(--action-text-color);
 	text-decoration: none;
 }
 
@@ -168,7 +176,7 @@ code {
 	/* clear: both; */
 }
 
-.endbutton button {
+.endbutton {
 	float: right;
 	margin-left: 4px;
 }
@@ -183,14 +191,19 @@ code {
 	margin-left: 1em;
 }
 
-input[type=button], input[type=submit], input[type=reset], .endbutton button {
+input[type=button], input[type=submit], input[type=reset], .endbutton {
 	border-radius: 6px;
 	margin-top: 4px;
-	padding: 0.5rem 1rem 0.5rem;
-	color: rgb(63,126,145);
-	/* border-color: #1967d217; */
-	border: none;
-	background-color: #1967d217;
+	padding: 4px 8px 4px;
+	border-style: solid;
+	border-color: var(--panel-bg-color);
+	background-color: var(--panel-bg-color);
+}
+
+input[type=submit]:hover, .endbutton:hover {
+	border-color: var(--panel-edge-color);
+	border-style: solid;
+	text-decoration: underline;
 }
 
 .summary-table td {
@@ -218,8 +231,8 @@ td.textvalue, th.textvalue {
     border: 2pt solid;
 	font-weight: normal;
     border-collapse: collapse;
-	border-color: rgb(193,218,230);
-	background-color: rgba(193,218,230,0.5);
+	border-color: var(--panel-edge-color);
+	background-color: var(--panel-bg-color);
 }
 
 table {

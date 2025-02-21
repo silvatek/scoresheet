@@ -39,23 +39,16 @@
 					</div>
 				</div>
 				{{end}}
-				<div class="controlbar" id="even_control_bar">
+				<div class="controlbar" id="event_control_bar">
 					<div>&nbsp;</div>
 					{{if .Game.LockedWith}}
 						&nbsp;
 					{{else}}
-					<div class="endbutton">
-						<a href="/newEvent?game={{.Game.ID}}&type=AP">
-							<button id="btn_away_penalty">Away Penalty</button>
-						</a>
-						<a href="/newEvent?game={{.Game.ID}}&type=AG">
-							<button id="btn_away_goal">Away Goal</button>
-						</a>
-						<a href="/newEvent?game={{.Game.ID}}&type=HP">
-							<button id="btn_home_penalty">Home Penalty</button>
-						</a>
-						<a href="/newEvent?game={{.Game.ID}}&type=HG">
-							<button id="btn_home_goal">Home Goal</button>
+					<div>
+						<a href="/newEvent?game={{.Game.ID}}&type=AP" class="endbutton" id="btn_away_penalty">Away Penalty</a>
+						<a href="/newEvent?game={{.Game.ID}}&type=AG" class="endbutton" id="btn_away_goal">Away Goal</a>
+						<a href="/newEvent?game={{.Game.ID}}&type=HP" class="endbutton" id="btn_home_penalty">Home Penalty</a>
+						<a href="/newEvent?game={{.Game.ID}}&type=HG" class="endbutton" id="btn_home_goal">Home Goal</a>
 						</a>
 					</div>
 					{{end}}
@@ -190,27 +183,15 @@
 			</div>
 			<div class="controlbar" id="game_control_bar">
 				<div>&nbsp;</div>
-				<div class="endbutton">
-					<a href="/share?type=game&code={{.Game.ID}}">
-						<button id="btn_share">Share Game</button>
-					</a>
+				<div>
+					<a href="/share?type=game&code={{.Game.ID}}" class="endbutton" id="btn_share">Share Game</a>
 					{{if .Game.LockedWith}}
-					<a href="/unlockGame?game={{.Game.ID}}">
-						<button id="btn_unlock">Unlock Game</button>
-					</a>
+					<a href="/unlockGame?game={{.Game.ID}}" class="endbutton" id="btn_unlock">Unlock Game</a>
 					{{else}}
-					<a href="/lockGame?game={{.Game.ID}}">
-						<button id="btn_lock">Lock Game</button>
-					</a>
-					<a href="/deleteEvent?game={{.Game.ID}}">
-						<button id="btn_delete">Delete event</button>
-					</a>
-					<a href="/delete?type=game&code={{.Game.ID}}">
-						<button id="btn_delete_game">Delete game</button>
-					</a>
-					<a href="/addPlayer?game={{.Game.ID}}">
-						<button id="btn_add_player">Add player</button>
-					</a>
+					<a href="/lockGame?game={{.Game.ID}}" class="endbutton" id="btn_lock">Lock Game</a>
+					<a href="/deleteEvent?game={{.Game.ID}}" class="endbutton" id="btn_delete">Delete event</a>
+					<a href="/delete?type=game&code={{.Game.ID}}" class="endbutton" id="btn_delete_game">Delete game</a>
+					<a href="/addPlayer?game={{.Game.ID}}" class="endbutton" id="btn_add_player">Add player</a>
 					{{end}}
 				</div>
 			</div>
