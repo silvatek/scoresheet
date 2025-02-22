@@ -202,9 +202,9 @@
 
 				<a href="/share?type=game&code={{.Game.ID}}" class="endbutton" id="btn_share">Share Game</a>
 				{{if .Game.LockedWith}}
-				<a href="/lock?&action=Unlock&type=Game&code={{.Game.ID}}" class="endbutton" id="btn_unlock">Unlock Game</a>
+				<a href="/lock?action=Unlock&type=Game&code={{.Game.ID}}" class="endbutton" id="btn_unlock">Unlock Game</a>
 				{{else}}
-				<a href="/lockGame?game={{.Game.ID}}" class="endbutton" id="btn_lock">Lock Game</a>
+				<a href="/lock?action=Lock&type=Game&code={{.Game.ID}}" class="endbutton" id="btn_lock">Lock Game</a>
 				<a href="/delete?type=game&code={{.Game.ID}}" class="endbutton" id="btn_delete_game">Delete game</a>
 				{{end}}
 			</div>
