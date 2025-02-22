@@ -26,7 +26,17 @@ func (store GameStore) getGame(ctx context.Context, id string) Game {
 }
 
 func (store GameStore) putGame(ctx context.Context, id string, game Game) {
+	FixupEventIds(&game)
 	store.datastore.Put(ctx, GAMES_COLLECTION, id, &game)
+}
+
+func FixupEventIds(game *Game) {
+	for n := 0; n < len(game.Events); n++ {
+		event := &(game.Events[n])
+		if event.ID == "" {
+			event.ID = randomEventId()
+		}
+	}
 }
 
 func (store GameStore) addGame(ctx context.Context, game Game) string {
