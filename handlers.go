@@ -51,6 +51,8 @@ func addRoutes(e *echo.Echo) {
 	e.Static("/static", "template/static")
 	e.File("/robots.txt", "template/static/robots.txt")
 
+	AddBotHandlers(e)
+
 	e.GET("/", homePage)
 	e.GET("/games", codeRedirect)
 	e.GET("/lists", codeRedirect)
