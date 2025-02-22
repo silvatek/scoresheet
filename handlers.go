@@ -390,6 +390,7 @@ func addGamePost(c echo.Context) error {
 	var game Game
 
 	c.Bind(&game)
+	game.Created = time.Now()
 
 	gameDate, err := time.Parse("2006-01-02", game.GameDate)
 	if err == nil {

@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Game struct {
@@ -21,6 +22,7 @@ type Game struct {
 	LockedWith  string
 	HomePlayers map[string]string
 	AwayPlayers map[string]string
+	Created     time.Time
 }
 
 type Linkable interface {
