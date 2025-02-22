@@ -66,10 +66,6 @@ func addRoutes(e *echo.Echo) {
 	e.POST("/addGame", addGamePost)
 	e.GET("/deleteEvent", deleteEventPage)
 	e.POST("/deleteGameEvent", deleteEventPost)
-	e.GET("/lockGame", lockGamePage)
-	e.POST("/lockGame", lockGamePost)
-	e.GET("/unlockGame", unlockGamePage)
-	e.POST("/unlockGame", unlockGamePost)
 	e.GET("/error", errorPage)
 	e.GET("/setstyle", styleSet)
 	e.GET("/addPlayer", addPlayerPage)
@@ -512,88 +508,41 @@ func lockItemPost(c echo.Context) error {
 
 	ctx := gctx(c)
 
+	if action == "lock" && unlockKey == "" {
+		return c.Redirect(http.StatusSeeOther, "/lock?error=1002&action=Lock&type="+itemType+"&code="+itemCode)
+	}
+
 	itemUrl := "/"
 
 	if itemType == "list" {
 		list := dataStore.getList(ctx, itemCode)
 
 		if action == "lock" {
-			if unlockKey == "" {
-				return c.Redirect(http.StatusSeeOther, "/lock?error=1002&action=Lock&type=list&code="+itemCode)
-			}
 			list.LockedWith = unlockKey
 		} else if action == "unlock" {
 			if unlockKey != list.LockedWith {
-				return c.Redirect(http.StatusSeeOther, "/lock?error=1001&action=Unlock&type=list&code="+itemCode)
+				return c.Redirect(http.StatusSeeOther, "/lock?error=1001&action=Unlock&type=List&code="+itemCode)
 			}
 			list.LockedWith = ""
 		}
 		dataStore.putList(ctx, itemCode, list)
-		itemUrl = "/list/" + itemCode
+	} else if itemType == "game" {
+		game := dataStore.getGame(ctx, itemCode)
+
+		if action == "lock" {
+			game.LockedWith = unlockKey
+		} else if action == "unlock" {
+			if unlockKey != game.LockedWith {
+				return c.Redirect(http.StatusSeeOther, "/lock?error=1001&action=Unlock&type=Game&code="+itemCode)
+			}
+			game.LockedWith = ""
+		}
+		dataStore.putGame(ctx, itemCode, game)
 	}
+
+	itemUrl = "/" + itemType + "/" + itemCode
 
 	return c.Redirect(http.StatusSeeOther, itemUrl)
-}
-
-func lockGamePage(c echo.Context) error {
-	gameId := c.QueryParam("game")
-
-	ctx := gctx(c)
-
-	game := dataStore.getGame(ctx, gameId)
-	data := pageData{
-		Game: game,
-	}
-
-	return c.Render(http.StatusOK, "lockgame", data)
-}
-
-func lockGamePost(c echo.Context) error {
-	gameId := c.FormValue("game_id")
-
-	ctx := gctx(c)
-
-	game := dataStore.getGame(ctx, gameId)
-
-	userKey := c.FormValue("unlock_key")
-
-	if game.LockedWith == "" {
-		game.LockedWith = userKey
-		dataStore.putGame(ctx, gameId, game)
-	}
-
-	return c.Redirect(http.StatusSeeOther, "/game/"+gameId)
-}
-
-func unlockGamePage(c echo.Context) error {
-	gameId := c.QueryParam("game")
-
-	game := dataStore.getGame(gctx(c), gameId)
-	data := pageData{
-		Game: game,
-	}
-	return c.Render(http.StatusOK, "unlockgame", data)
-}
-
-func unlockGamePost(c echo.Context) error {
-	gameId := c.FormValue("game_id")
-
-	ctx := gctx(c)
-
-	game := dataStore.getGame(ctx, gameId)
-
-	userKey := c.FormValue("unlock_key")
-
-	var errorSuffix string
-
-	if game.LockedWith == userKey {
-		game.LockedWith = ""
-		dataStore.putGame(ctx, gameId, game)
-	} else {
-		errorSuffix = "?e=8001"
-	}
-
-	return c.Redirect(http.StatusSeeOther, "/game/"+gameId+errorSuffix)
 }
 
 func itemUrl(path string, r *http.Request) string {

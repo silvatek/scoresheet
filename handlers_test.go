@@ -131,60 +131,6 @@ func TestAddGamePost(t *testing.T) {
 	}
 }
 
-func TestLockGamePage(t *testing.T) {
-	dataStore = GameStore{datastore: testDataStore()}
-	setupDataStore(dataStore)
-
-	wt := webTest(t)
-	wt.setQuery("game", TEST_ID_1)
-	wt.showBodyOnFail()
-
-	lockGamePage(wt.ec)
-
-	wt.confirmSuccessResponse()
-	wt.confirmHtmlIncludes("h1", "Lock Game "+TEST_ID_1)
-}
-
-func TestLockGamePost(t *testing.T) {
-	dataStore = GameStore{datastore: testDataStore()}
-	setupDataStore(dataStore)
-
-	wt := webTest(t)
-	wt.post("game_id=" + TEST_ID_1 + "&unlock_key=testing")
-
-	lockGamePost(wt.ec)
-
-	wt.confirmRedirect("/game/" + TEST_ID_1)
-}
-
-func TestUnlockGamePage(t *testing.T) {
-	dataStore = GameStore{datastore: testDataStore()}
-	setupDataStore(dataStore)
-
-	wt := webTest(t)
-	wt.setQuery("game", TEST_ID_1)
-	wt.showBodyOnFail()
-
-	unlockGamePage(wt.ec)
-
-	wt.confirmSuccessResponse()
-
-	wt.confirmHtmlIncludes("h1", "Unlock Game "+TEST_ID_1)
-}
-
-func TestUnlockGamePost(t *testing.T) {
-	dataStore = GameStore{datastore: testDataStore()}
-	game := testGame2()
-	dataStore.putGame(context.Background(), game.ID, game)
-
-	wt := webTest(t)
-	wt.post("game_id=" + TEST_ID_2 + "&unlock_key=secret123")
-
-	unlockGamePost(wt.ec)
-
-	wt.confirmRedirect("/game/" + TEST_ID_2)
-}
-
 func TestDeleteEventPage(t *testing.T) {
 	dataStore = GameStore{datastore: testDataStore()}
 	setupDataStore(dataStore)
