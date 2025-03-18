@@ -1,6 +1,8 @@
 module scoresheet
 
-go 1.19
+go 1.23.0
+
+toolchain go1.23.1
 
 require (
 	cloud.google.com/go/firestore v1.15.0
@@ -39,7 +41,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	golang.org/x/crypto v0.23.0 // indirect
 	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/oauth2 v0.20.0 // indirect
+	golang.org/x/oauth2 v0.28.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
