@@ -24,3 +24,4 @@ go.work.sum
 
 .DS_Store
 .vscode
+.vscode/launch.json
